@@ -1,6 +1,7 @@
-from extensions import db
+from extensions import db, login_manager
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, primary_key=True)
@@ -10,3 +11,11 @@ class User(db.Model):
     phone = db.Column(db.String(15))
     role = db.Column(db.String(20), default="customer")
     created_at = db.Column(db.DateTime)
+
+    def get_id(self):
+        return str(self.user_id)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
