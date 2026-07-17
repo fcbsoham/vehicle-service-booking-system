@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Vehicles</title>
+</head>
+
+<body>
+
+<h1>My Vehicles</h1>
+
+<a href="/add_vehicle">
+    <button>Add Vehicle</button>
+</a>
+
+<hr>
+
+{% if vehicles %}
+
+    {% for vehicle in vehicles %}
+
+        <h3>{{ vehicle.brand }} {{ vehicle.model }}</h3>
+
+        <p>
+            Year: {{ vehicle.year }}
+        </p>
+
+        <p>
+            Registration Number: {{ vehicle.registration_number }}
+        </p>
+
+        <p>
+            Fuel Type: {{ vehicle.fuel_type }}
+        </p>
+
+        <hr>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>No vehicles found.</p>
+
+{% endif %}
+
+</body>
+</html>

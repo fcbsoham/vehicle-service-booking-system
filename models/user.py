@@ -11,6 +11,12 @@ class User(UserMixin, db.Model):
     phone = db.Column(db.String(15))
     role = db.Column(db.String(20), default="customer")
     created_at = db.Column(db.DateTime)
+    vehicles = db.relationship(
+    "Vehicle",
+    backref="owner",
+    lazy=True,
+    cascade="all, delete"
+)
 
     def get_id(self):
         return str(self.user_id)

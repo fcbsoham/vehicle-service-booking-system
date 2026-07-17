@@ -5,6 +5,9 @@ from extensions import db, login_manager, bcrypt
 from flask_login import login_user
 from flask_login import login_required, current_user, logout_user
 from flask import redirect, url_for
+from models.vehicle import Vehicle
+from flask_login import current_user
+from models.vehicle import Vehicle
 
 
 app = Flask(__name__)
@@ -73,6 +76,41 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for("home"))
+
+@app.route("/add_vehicle", methods=["GET", "POST"])
+@login_required
+def add_vehicle():
+
+    if request.method == "POST":
+
+        vehicle = Vehicle(
+            user_id=current_user.user_id,
+            brand=request.form["brand"],
+            model=request.form["model"],
+            year=request.form["year"],
+            registration_number=request.form["registration_number"],
+            fuel_type=request.form["fuel_type"]
+        )
+
+        db.session.add(vehicle)
+        db.session.commit()
+
+        return "Vehicle Added Successfully!"
+
+    return render_template("add_vehicle.html")
+
+@app.route("/my_vehicles")
+@login_required
+def my_vehicles():
+
+    vehicles = Vehicle.query.filter_by(
+        user_id=current_user.user_id
+    ).all()
+
+    return render_template(
+        "my_vehicles.html",
+        vehicles=vehicles
+    )
 
 with app.app_context():
     db.create_all()
