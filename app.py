@@ -8,7 +8,8 @@ from flask import redirect, url_for
 from models.vehicle import Vehicle
 from flask_login import current_user
 from models.vehicle import Vehicle
-
+from models.booking import Booking
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -110,6 +111,120 @@ def my_vehicles():
     return render_template(
         "my_vehicles.html",
         vehicles=vehicles
+    )
+
+@app.route("/edit_vehicle/<int:vehicle_id>", methods=["GET", "POST"])
+@login_required
+def edit_vehicle(vehicle_id):
+
+    vehicle = Vehicle.query.filter_by(
+        vehicle_id=vehicle_id,
+        user_id=current_user.user_id
+    ).first_or_404()
+
+    if request.method == "POST":
+
+        vehicle.brand = request.form["brand"]
+        vehicle.model = request.form["model"]
+        vehicle.year = request.form["year"]
+        vehicle.registration_number = request.form["registration_number"]
+        vehicle.fuel_type = request.form["fuel_type"]
+
+        db.session.commit()
+
+        return redirect(url_for("my_vehicles"))
+
+    return render_template(
+        "edit_vehicle.html",
+        vehicle=vehicle
+    )
+
+@app.route("/delete_vehicle/<int:vehicle_id>")
+@login_required
+def delete_vehicle(vehicle_id):
+
+    vehicle = Vehicle.query.filter_by(
+        vehicle_id=vehicle_id,
+        user_id=current_user.user_id
+    ).first_or_404()
+
+    db.session.delete(vehicle)
+    db.session.commit()
+
+    return redirect(url_for("my_vehicles"))
+
+@app.route("/book_service", methods=["GET", "POST"])
+@login_required
+def book_service():
+
+    vehicles = Vehicle.query.filter_by(
+        user_id=current_user.user_id
+    ).all()
+
+
+    if request.method == "POST":
+
+        booking = Booking(
+
+            user_id=current_user.user_id,
+
+            vehicle_id=request.form["vehicle_id"],
+
+            service_type=request.form["service_type"],
+
+            booking_date=datetime.strptime(
+                request.form["booking_date"],
+                "%Y-%m-%d"
+            ),
+
+            description=request.form["description"]
+
+        )
+
+
+        db.session.add(booking)
+
+        db.session.commit()
+
+
+        return "Service booked successfully!"
+
+
+    return render_template(
+        "book_service.html",
+        vehicles=vehicles
+    )
+
+@app.route("/my_bookings")
+@login_required
+def my_bookings():
+
+    bookings = Booking.query.filter_by(
+        user_id=current_user.user_id
+    ).all()
+
+
+    return render_template(
+        "my_bookings.html",
+        bookings=bookings
+    )
+
+@app.route("/admin")
+@login_required
+def admin_dashboard():
+
+    if current_user.role != "admin":
+        return "Access Denied", 403
+
+    users = User.query.all()
+    vehicles = Vehicle.query.all()
+    bookings = Booking.query.all()
+
+    return render_template(
+        "admin_dashboard.html",
+        users=users,
+        vehicles=vehicles,
+        bookings=bookings
     )
 
 with app.app_context():

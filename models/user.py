@@ -17,6 +17,11 @@ class User(UserMixin, db.Model):
     lazy=True,
     cascade="all, delete"
 )
+    bookings = db.relationship(
+    "Booking",
+    backref="user",
+    lazy=True
+)
 
     def get_id(self):
         return str(self.user_id)

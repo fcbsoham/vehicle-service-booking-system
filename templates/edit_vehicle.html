@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Vehicle</title>
+</head>
+<body>
+
+<h2>Edit Vehicle</h2>
+
+<form method="POST">
+
+    <label>Brand</label><br>
+    <input type="text" name="brand" value="{{ vehicle.brand }}" required><br><br>
+
+    <label>Model</label><br>
+    <input type="text" name="model" value="{{ vehicle.model }}" required><br><br>
+
+    <label>Year</label><br>
+    <input type="number" name="year" value="{{ vehicle.year }}"><br><br>
+
+    <label>Registration Number</label><br>
+    <input type="text"
+           name="registration_number"
+           value="{{ vehicle.registration_number }}"
+           required><br><br>
+
+    <label>Fuel Type</label><br>
+    <input type="text"
+           name="fuel_type"
+           value="{{ vehicle.fuel_type }}"><br><br>
+
+    <button type="submit">Update Vehicle</button>
+
+</form>
+
+</body>
+</html>

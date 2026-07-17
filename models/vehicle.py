@@ -27,3 +27,8 @@ class Vehicle(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
+    bookings = db.relationship(
+    "Booking",
+    backref="vehicle",
+    lazy=True
+)

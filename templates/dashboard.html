@@ -1,21 +1,102 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<h1>Welcome {{ current_user.full_name }}</h1>
+{% block title %}
 
-<p>You are successfully logged in.</p>
+Dashboard
 
-<a href="/logout">
-    <button>Logout</button>
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+
+Welcome,
+
+{{ current_user.full_name }}
+
+
+</h2>
+
+<div class="row">
+
+<div class="col-md-4">
+
+<div class="card stat-card">
+
+<i class="bi bi-car-front-fill"></i>
+
+<h5>Total Vehicles</h5>
+
+<h2>{{ current_user.vehicles|length }}</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="card stat-card">
+
+<i class="bi bi-calendar-check"></i>
+
+<h5>Total Bookings</h5>
+
+<h2>{{ current_user.bookings|length }}</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="card stat-card">
+
+<i class="bi bi-person-circle"></i>
+
+<h5>Account Type</h5>
+
+<h2>{{ current_user.role }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="mt-5">
+
+<a class="btn btn-primary me-2"
+href="/my_vehicles">
+
+My Vehicles
+
 </a>
 
-<a href="/my_vehicles">
-    <button>My Vehicles</button>
+<a class="btn btn-success me-2"
+href="/book_service">
+
+Book Service
+
 </a>
 
-</body>
-</html>
+<a class="btn btn-warning me-2"
+href="/my_bookings">
+
+My Bookings
+
+</a>
+
+{% if current_user.role=="admin" %}
+
+<a class="btn btn-dark"
+href="/admin">
+
+Admin Dashboard
+
+</a>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Bookings</title>
+</head>
+
+<body>
+
+<h1>My Service Bookings</h1>
+
+
+<a href="/book_service">
+    <button>Book New Service</button>
+</a>
+
+<hr>
+
+
+{% for booking in bookings %}
+
+
+<h3>
+    {{ booking.service_type }}
+</h3>
+
+
+<p>
+Vehicle:
+{{ booking.vehicle.brand }}
+{{ booking.vehicle.model }}
+</p>
+
+
+<p>
+Date:
+{{ booking.booking_date }}
+</p>
+
+
+<p>
+Status:
+{{ booking.status }}
+</p>
+
+
+<p>
+Description:
+{{ booking.description }}
+</p>
+
+
+<hr>
+
+
+{% else %}
+
+<p>No bookings found.</p>
+
+
+{% endfor %}
+
+
+</body>
+
+</html>
