@@ -1,0 +1,336 @@
+<footer class="dc-footer">
+    <div class="container">
+
+        <!-- Main Footer -->
+        <div class="row g-4 py-5">
+
+            <!-- Brand Section -->
+            <div class="col-lg-4 col-md-6">
+
+<a class="dc-footer-brand"
+   href="{{ url_for('dashboard') if current_user.is_authenticated else url_for('home') }}">
+<span class="dc-footer-logo">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="29"
+        height="29"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-label="Car logo"
+        role="img">
+
+        <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/>
+        <path d="M3 11h18a1 1 0 0 1 1 1v5H2v-5a1 1 0 0 1 1-1z"/>
+        <path d="M5 17v2"/>
+        <path d="M19 17v2"/>
+        <path d="M5 14h3"/>
+        <path d="M16 14h3"/>
+        <circle cx="6" cy="17" r="1.5"/>
+        <circle cx="18" cy="17" r="1.5"/>
+    </svg>
+</span>
+    <span>Drive<span class="dc-footer-highlight">Care</span></span>
+</a>
+
+                <p class="dc-footer-description mt-3">
+                    Your trusted partner for smarter vehicle care.
+                    Manage your vehicles, book services, and keep
+                    your journeys running smoothly with DriveCare.
+                </p>
+
+                <div class="dc-footer-trust">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Convenient. Reliable. Hassle-free.</span>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="dc-footer-heading">Quick Links</h6>
+
+                <ul class="dc-footer-links">
+                    <li>
+                        <a href="{{ url_for('home') }}">
+                            <i class="bi bi-chevron-right"></i> Home
+                        </a>
+                    </li>
+
+                    {% if current_user.is_authenticated %}
+                        <li>
+                            <a href="{{ url_for('dashboard') }}">
+                                <i class="bi bi-chevron-right"></i> Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('my_vehicles') }}">
+                                <i class="bi bi-chevron-right"></i> My Vehicles
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('my_bookings') }}">
+                                <i class="bi bi-chevron-right"></i> My Bookings
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ url_for('login') }}">
+                                <i class="bi bi-chevron-right"></i> Login
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('register') }}">
+                                <i class="bi bi-chevron-right"></i> Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Services -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="dc-footer-heading">Our Services</h6>
+
+                <ul class="dc-footer-links">
+                    <li>
+                        <a href="{{ url_for('book_service') if current_user.is_authenticated else url_for('login') }}">
+                            <i class="bi bi-chevron-right"></i> General Service
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('book_service') if current_user.is_authenticated else url_for('login') }}">
+                            <i class="bi bi-chevron-right"></i> Oil Change
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('book_service') if current_user.is_authenticated else url_for('login') }}">
+                            <i class="bi bi-chevron-right"></i> Engine Repair
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('book_service') if current_user.is_authenticated else url_for('login') }}">
+                            <i class="bi bi-chevron-right"></i> Brake Service
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contact / Platform Info -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="dc-footer-heading">DriveCare Platform</h6>
+
+                <p class="dc-footer-description">
+                    Everything you need to keep track of your vehicles
+                    and service appointments in one place.
+                </p>
+
+                <div class="dc-footer-feature">
+                    <span class="dc-footer-feature-icon">
+                        <i class="bi bi-calendar2-check"></i>
+                    </span>
+                    <span>Easy service booking</span>
+                </div>
+
+                <div class="dc-footer-feature">
+                    <span class="dc-footer-feature-icon">
+                        <i class="bi bi-car-front"></i>
+                    </span>
+                    <span>Vehicle management</span>
+                </div>
+
+                <div class="dc-footer-feature">
+                    <span class="dc-footer-feature-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+                    <span>Booking status tracking</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Footer -->
+        <div class="dc-footer-bottom">
+            <div class="dc-footer-copyright">
+                &copy; {{ now.year if now is defined else 2026 }} DriveCare.
+                All rights reserved.
+            </div>
+
+            <div class="dc-footer-bottom-note">
+                <i class="bi bi-heart-fill"></i>
+                Designed for better vehicle care.
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+<style>
+    .dc-footer {
+        margin-top: auto;
+        color: #cbd5e1;
+        background: #0f172a;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .dc-footer-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #ffffff;
+        font-size: 1.45rem;
+        font-weight: 800;
+        letter-spacing: -0.6px;
+        text-decoration: none;
+    }
+
+    .dc-footer-brand:hover {
+        color: #ffffff;
+    }
+
+    .dc-footer-logo {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #ffffff;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 12px;
+    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.25);
+}
+
+.dc-footer-logo svg {
+    display: block;
+    width: 29px;
+    height: 29px;
+}
+
+    .dc-footer-highlight {
+        color: #60a5fa;
+    }
+
+    .dc-footer-description {
+        max-width: 360px;
+        color: #94a3b8;
+        font-size: 0.87rem;
+        line-height: 1.9;
+    }
+
+    .dc-footer-trust {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-top: 18px;
+        color: #bfdbfe;
+        font-size: 0.82rem;
+    }
+
+    .dc-footer-trust i {
+        color: #60a5fa;
+        font-size: 1.15rem;
+    }
+
+    .dc-footer-heading {
+        margin-bottom: 22px;
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    .dc-footer-heading::after {
+        display: block;
+        width: 32px;
+        height: 3px;
+        margin-top: 10px;
+        background: #3b82f6;
+        border-radius: 5px;
+        content: "";
+    }
+
+    .dc-footer-links {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .dc-footer-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #94a3b8;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .dc-footer-links a i {
+        color: #60a5fa;
+        font-size: 0.72rem;
+    }
+
+    .dc-footer-links a:hover {
+        color: #ffffff;
+        transform: translateX(3px);
+    }
+
+    .dc-footer-feature {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-bottom: 13px;
+        color: #cbd5e1;
+        font-size: 0.82rem;
+    }
+
+    .dc-footer-feature-icon {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #93c5fd;
+        background: rgba(59, 130, 246, 0.13);
+        border: 1px solid rgba(96, 165, 250, 0.15);
+        border-radius: 9px;
+    }
+
+    .dc-footer-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 0;
+        border-top: 1px solid rgba(148, 163, 184, 0.18);
+        font-size: 0.78rem;
+    }
+
+    .dc-footer-copyright {
+        color: #94a3b8;
+    }
+
+    .dc-footer-bottom-note {
+        color: #94a3b8;
+    }
+
+    .dc-footer-bottom-note i {
+        margin-right: 5px;
+        color: #60a5fa;
+        font-size: 0.72rem;
+    }
+
+    @media (max-width: 767.98px) {
+        .dc-footer-bottom {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+    }
+</style>

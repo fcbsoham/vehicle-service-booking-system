@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .business-dashboard {
+        padding: 28px 0 45px;
+    }
+
+    .business-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+
+    .business-header h1 {
+        font-size: clamp(1.7rem, 3vw, 2.3rem);
+        font-weight: 800;
+        margin-bottom: 8px;
+        color: #14213d;
+    }
+
+    .business-header p {
+        color: #64748b;
+        margin-bottom: 0;
+    }
+
+    .business-badge {
+        background: #e8f1ff;
+        color: #2458a6;
+        padding: 9px 15px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .business-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 26px;
+    }
+
+    .business-card {
+        background: #fff;
+        padding: 23px;
+        border: 1px solid #e5eaf2;
+        border-radius: 16px;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.04);
+        min-width: 0;
+    }
+
+    .business-card .card-label {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .business-card .card-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #14213d;
+        line-height: 1.2;
+    }
+
+    .business-card .card-note {
+        color: #64748b;
+        font-size: 0.82rem;
+        margin-top: 10px;
+    }
+
+    .business-section {
+        background: #fff;
+        border: 1px solid #e5eaf2;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    .business-section h2 {
+        color: #14213d;
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin-bottom: 7px;
+    }
+
+    .section-description {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .status-item {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+    .status-item span {
+        display: block;
+        color: #64748b;
+        font-size: 0.86rem;
+        margin-bottom: 8px;
+    }
+
+    .status-item strong {
+        color: #14213d;
+        font-size: 1.65rem;
+    }
+
+    .business-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .business-table th,
+    .business-table td {
+        text-align: left;
+        padding: 14px 12px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .business-table th {
+        color: #64748b;
+        background: #f8fafc;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .business-table td {
+        color: #334155;
+        font-size: 0.92rem;
+    }
+
+    .business-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .business-table .number {
+        font-weight: 700;
+        color: #14213d;
+    }
+
+    .business-table-wrap {
+        overflow-x: auto;
+    }
+
+    .recommendation-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .recommendation {
+        padding: 18px;
+        border-radius: 12px;
+        border-left: 4px solid #3b82f6;
+        background: #eff6ff;
+    }
+
+    .recommendation.warning {
+        border-left-color: #d97706;
+        background: #fffbeb;
+    }
+
+    .recommendation.success {
+        border-left-color: #16a34a;
+        background: #f0fdf4;
+    }
+
+    .recommendation h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #14213d;
+        margin-bottom: 7px;
+    }
+
+    .recommendation p {
+        color: #475569;
+        margin-bottom: 0;
+        line-height: 1.6;
+    }
+
+    .business-footer {
+        color: #64748b;
+        font-size: 0.83rem;
+        text-align: center;
+        margin-top: 18px;
+    }
+
+    @media (max-width: 992px) {
+        .business-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .status-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .business-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .business-section {
+            padding: 18px;
+        }
+
+        .status-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container business-dashboard">
+
+    <header class="business-header">
+        <div>
+            <h1>Business Insights</h1>
+            <p>Understand your customers, bookings and service demand.</p>
+        </div>
+
+        <span class="business-badge">
+            <i class="bi bi-bar-chart-line"></i>
+            Business Overview
+        </span>
+    </header>
+
+
+    <!-- Main business metrics -->
+    <section class="business-grid">
+
+        <article class="business-card">
+            <div class="card-label">Total Customers</div>
+            <div class="card-value">{{ total_users }}</div>
+            <div class="card-note">Registered accounts</div>
+        </article>
+
+        <article class="business-card">
+            <div class="card-label">Registered Vehicles</div>
+            <div class="card-value">{{ total_vehicles }}</div>
+            <div class="card-note">Vehicles in the system</div>
+        </article>
+
+        <article class="business-card">
+            <div class="card-label">Total Bookings</div>
+            <div class="card-value">{{ total_bookings }}</div>
+            <div class="card-note">All recorded bookings</div>
+        </article>
+
+        <article class="business-card">
+            <div class="card-label">Completed Bookings</div>
+            <div class="card-value">{{ completed_bookings }}</div>
+            <div class="card-note">Bookings marked completed</div>
+        </article>
+
+    </section>
+
+
+    <!-- Booking status overview -->
+    <section class="business-section">
+        <h2>Booking Status Overview</h2>
+        <p class="section-description">
+            See how bookings are progressing and which ones may need attention.
+        </p>
+
+        <div class="status-grid">
+
+            <div class="status-item">
+                <span>Completed</span>
+                <strong>{{ completed_bookings }}</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Pending</span>
+                <strong>{{ pending_bookings }}</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Confirmed</span>
+                <strong>{{ confirmed_bookings }}</strong>
+            </div>
+
+            <div class="status-item">
+                <span>Cancelled</span>
+                <strong>{{ cancelled_bookings }}</strong>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Popular services -->
+    <section class="business-section">
+        <h2>Most Popular Services</h2>
+        <p class="section-description">
+            These services have the highest booking counts in the available records.
+            Use this information when reviewing service demand.
+        </p>
+
+        <div class="business-table-wrap">
+            <table class="business-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Service</th>
+                        <th>Number of Bookings</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in popular_services %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.service }}</td>
+                        <td class="number">{{ item.count }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">No service booking records are available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+
+    <!-- Frequent customers -->
+    <section class="business-section">
+        <h2>Frequent Customers</h2>
+        <p class="section-description">
+            Customers with the highest number of recorded bookings.
+            This helps identify customers who may value a loyalty programme.
+        </p>
+
+        <div class="business-table-wrap">
+            <table class="business-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Customer</th>
+                        <th>Total Bookings</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for customer in frequent_customers %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ customer.name }}</td>
+                        <td class="number">{{ customer.booking_count }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">No customer booking records are available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+
+    <!-- Business recommendations -->
+    <section class="business-section">
+        <h2>Recommended Actions</h2>
+        <p class="section-description">
+            Practical suggestions based on recorded booking activity.
+        </p>
+
+        <div class="recommendation-list">
+
+            {% for recommendation in recommendations %}
+            <article class="recommendation {{ recommendation.type }}">
+                <h3>{{ recommendation.title }}</h3>
+                <p>{{ recommendation.message }}</p>
+            </article>
+            {% endfor %}
+
+        </div>
+    </section>
+
+
+    <p class="business-footer">
+        Insights are calculated from the current database records.
+        Recommendations are intended to support decisions, not replace business judgement.
+    </p>
+
+</div>
+{% endblock %}

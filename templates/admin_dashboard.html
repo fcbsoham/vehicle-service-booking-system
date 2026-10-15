@@ -1,63 +1,1054 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}Admin Dashboard | DriveCare{% endblock %}
 
-<h1>Admin Dashboard</h1>
+{% block content %}
+<section class="admin-page">
+    <div class="admin-container">
 
-<h2>Statistics</h2>
+        <!-- Header -->
+        <header class="admin-header">
+            <div>
+                <span class="admin-eyebrow">
+                    <i class="bi bi-shield-lock"></i>
+                    ADMINISTRATION
+                </span>
+                <h1>Admin Dashboard</h1>
+                <p>Manage users, vehicles, and service bookings from one place.</p>
+            </div>
 
-<p>Total Users: {{ users|length }}</p>
-<p>Total Vehicles: {{ vehicles|length }}</p>
-<p>Total Bookings: {{ bookings|length }}</p>
+            <div class="admin-profile">
+                <div class="admin-profile-icon">
+                    <i class="bi bi-person-fill-gear"></i>
+                </div>
+                <div>
+                    <strong>{{ current_user.full_name }}</strong>
+                    <span>Administrator</span>
+                </div>
+            </div>
+        </header>
 
-<hr>
+        <!-- Overview -->
+        <div class="admin-section-heading">
+            <div>
+                <h2>System Overview</h2>
+                <p>A snapshot of your DriveCare platform.</p>
+            </div>
+            <span class="admin-live-label">
+                <span></span> Database Statistics
+            </span>
+        </div>
 
-<h2>All Bookings</h2>
+        <div class="admin-stats-grid">
 
-<table border="1" cellpadding="8">
+            <div class="admin-stat-card">
+                <div class="admin-stat-top">
+                    <span class="admin-stat-label">Total Users</span>
+                    <span class="admin-stat-icon icon-users">
+                        <i class="bi bi-people"></i>
+                    </span>
+                </div>
+                <h3>{{ total_users }}</h3>
+                <p>Registered accounts</p>
+            </div>
 
-<tr>
-    <th>User</th>
-    <th>Vehicle</th>
-    <th>Service</th>
-    <th>Date</th>
-    <th>Status</th>
-</tr>
+            <div class="admin-stat-card">
+                <div class="admin-stat-top">
+                    <span class="admin-stat-label">Total Vehicles</span>
+                    <span class="admin-stat-icon icon-vehicles">
+                        <i class="bi bi-car-front"></i>
+                    </span>
+                </div>
+                <h3>{{ total_vehicles }}</h3>
+                <p>Registered vehicles</p>
+            </div>
 
-{% for booking in bookings %}
+            <div class="admin-stat-card">
+                <div class="admin-stat-top">
+                    <span class="admin-stat-label">Total Bookings</span>
+                    <span class="admin-stat-icon icon-bookings">
+                        <i class="bi bi-calendar2-check"></i>
+                    </span>
+                </div>
+                <h3>{{ total_bookings }}</h3>
+                <p>Service requests</p>
+            </div>
 
-<tr>
+            <div class="admin-stat-card">
+                <div class="admin-stat-top">
+                    <span class="admin-stat-label">Pending</span>
+                    <span class="admin-stat-icon icon-pending">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+                </div>
+                <h3>{{ pending_bookings }}</h3>
+                <p>Awaiting processing</p>
+            </div>
 
-<td>
-    {{ booking.user.full_name }}
+            <div class="admin-stat-card">
+                <div class="admin-stat-top">
+                    <span class="admin-stat-label">Completed</span>
+                    <span class="admin-stat-icon icon-completed">
+                        <i class="bi bi-check-circle"></i>
+                    </span>
+                </div>
+                <h3>{{ completed_bookings }}</h3>
+                <p>Completed services</p>
+            </div>
+
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="admin-section-heading admin-quick-heading">
+            <div>
+                <h2>Quick Navigation</h2>
+                <p>Jump to the records you need to review.</p>
+            </div>
+        </div>
+
+        <div class="admin-quick-grid">
+            <a href="#users-section" class="admin-quick-card">
+                <span class="quick-icon icon-users">
+                    <i class="bi bi-people"></i>
+                </span>
+                <span>
+                    <strong>User Directory</strong>
+                    <small>{{ total_users }} registered users</small>
+                </span>
+                <i class="bi bi-arrow-up-right quick-arrow"></i>
+            </a>
+
+        <a href="{{ url_for('business.business_dashboard') }}" class="admin-quick-card">
+    <span class="quick-icon icon-bookings">
+        <i class="bi bi-graph-up-arrow"></i>
+    </span>
+    <span>
+        <strong>Business Insights</strong>
+        <small>View business metrics, popular services and customer activity</small>
+    </span>
+    <i class="bi bi-arrow-up-right quick-arrow"></i>
+</a>
+
+
+            <a href="#vehicles-section" class="admin-quick-card">
+                <span class="quick-icon icon-vehicles">
+                    <i class="bi bi-car-front"></i>
+                </span>
+                <span>
+                    <strong>Vehicle Registry</strong>
+                    <small>{{ total_vehicles }} registered vehicles</small>
+                </span>
+                <i class="bi bi-arrow-up-right quick-arrow"></i>
+            </a>
+
+            <a href="#bookings-section" class="admin-quick-card">
+                <span class="quick-icon icon-bookings">
+                    <i class="bi bi-calendar2-check"></i>
+                </span>
+                <span>
+                    <strong>Service Bookings</strong>
+                    <small>{{ total_bookings }} total bookings</small>
+                </span>
+                <i class="bi bi-arrow-up-right quick-arrow"></i>
+            </a>
+        </div>
+
+
+        <!-- User Management -->
+        <section class="admin-table-panel" id="users-section">
+            <div class="admin-table-header">
+                <div>
+                    <h2><i class="bi bi-people"></i> User Management</h2>
+                    <p>Registered accounts and account roles.</p>
+                </div>
+                <span class="admin-record-count">{{ total_users }} records</span>
+            </div>
+
+            <div class="admin-search-row">
+                <div class="admin-search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="search"
+                           class="table-search"
+                           data-table="usersTable"
+                           placeholder="Search users by name, email or role..."
+                           aria-label="Search users">
+                </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+                <table class="admin-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>USER</th>
+                            <th>EMAIL</th>
+                            <th>PHONE</th>
+                            <th>ROLE</th>
+                            <th>REGISTERED</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="admin-user-cell">
+                                    <span class="admin-avatar">
+                                        {{ (user.full_name or 'U')[0]|upper }}
+                                    </span>
+                                    <div>
+                                        <strong>{{ user.full_name }}</strong>
+                                        <small>ID #{{ user.user_id }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.phone or '—' }}</td>
+                            <td>
+                                <span class="admin-role-badge
+                                    {% if user.role == 'admin' %}role-admin{% else %}role-user{% endif %}">
+                                    {{ user.role|capitalize }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.created_at %}
+                                    {{ user.created_at.strftime('%d %b %Y') }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="admin-empty-cell">No users found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="admin-no-results" data-for="usersTable" hidden>
+                    No matching users found.
+                </p>
+            </div>
+        </section>
+
+        <!-- Vehicle Management -->
+        <section class="admin-table-panel" id="vehicles-section">
+            <div class="admin-table-header">
+                <div>
+                    <h2><i class="bi bi-car-front"></i> Vehicle Management</h2>
+                    <p>Vehicles registered across the platform.</p>
+                </div>
+                <span class="admin-record-count">{{ total_vehicles }} records</span>
+            </div>
+
+            <div class="admin-search-row">
+                <div class="admin-search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="search"
+                           class="table-search"
+                           data-table="vehiclesTable"
+                           placeholder="Search by brand, model, registration or owner..."
+                           aria-label="Search vehicles">
+                </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+                <table class="admin-table" id="vehiclesTable">
+                    <thead>
+                        <tr>
+                            <th>VEHICLE</th>
+                            <th>REGISTRATION</th>
+                            <th>YEAR</th>
+                            <th>FUEL TYPE</th>
+                            <th>OWNER</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vehicle in vehicles %}
+                        <tr>
+                            <td>
+                                <div class="admin-vehicle-cell">
+                                    <span class="admin-row-icon">
+                                        <i class="bi bi-car-front-fill"></i>
+                                    </span>
+                                    <div>
+                                        <strong>{{ vehicle.brand }} {{ vehicle.model }}</strong>
+                                        <small>Vehicle #{{ vehicle.vehicle_id }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="registration-badge">
+                                    {{ vehicle.registration_number }}
+                                </span>
+                            </td>
+                            <td>{{ vehicle.year }}</td>
+                            <td>{{ vehicle.fuel_type }}</td>
+                            <td>
+                                {% if vehicle.user %}
+                                    {{ vehicle.user.full_name }}
+                                {% else %}
+                                    User #{{ vehicle.user_id }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="admin-empty-cell">No vehicles found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="admin-no-results" data-for="vehiclesTable" hidden>
+                    No matching vehicles found.
+                </p>
+            </div>
+        </section>
+
+        <!-- Booking Management -->
+        <section class="admin-table-panel" id="bookings-section">
+            <div class="admin-table-header">
+                <div>
+                    <h2><i class="bi bi-calendar2-check"></i> Booking Management</h2>
+                    <p>Review service requests and their current statuses.</p>
+                </div>
+                <span class="admin-record-count">{{ total_bookings }} records</span>
+            </div>
+
+            <div class="admin-search-row">
+                <div class="admin-search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="search"
+                           class="table-search"
+                           data-table="bookingsTable"
+                           placeholder="Search service, customer, vehicle or status..."
+                           aria-label="Search bookings">
+                </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+                <table class="admin-table" id="bookingsTable">
+                    <thead>
+                        <tr>
+                            <th>BOOKING</th>
+                            <th>CUSTOMER</th>
+                            <th>VEHICLE</th>
+                            <th>SERVICE</th>
+                            <th>APPOINTMENT</th>
+<th>STATUS</th>
+<th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        {% set status_text = (booking.status or 'Pending')|string|lower %}
+                        {% set status_class = status_text|replace(' ', '-') %}
+
+                        <tr>
+                            <td>
+                                <span class="admin-booking-id">
+                                    #{{ booking.booking_id }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if booking.user %}
+                                    <div class="admin-customer-cell">
+                                        <strong>{{ booking.user.full_name }}</strong>
+                                        <small>{{ booking.user.email }}</small>
+                                    </div>
+                                {% else %}
+                                    User #{{ booking.user_id }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if booking.vehicle %}
+                                    <div class="admin-customer-cell">
+                                        <strong>{{ booking.vehicle.brand }} {{ booking.vehicle.model }}</strong>
+                                        <small>{{ booking.vehicle.registration_number }}</small>
+                                    </div>
+                                {% else %}
+                                    Vehicle #{{ booking.vehicle_id }}
+                                {% endif %}
+                            </td>
+                            <td>{{ booking.service_type }}</td>
+                            <td>
+                                {% if booking.booking_date %}
+                                    {{ booking.booking_date.strftime('%d %b %Y') }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>
+    <span class="admin-status-badge status-{{ status_class }}">
+        <span class="admin-status-dot"></span>
+        {{ status_text|capitalize }}
+    </span>
 </td>
 
 <td>
-    {{ booking.vehicle.brand }}
-    {{ booking.vehicle.model }}
+    {% if status_text == 'pending' %}
+        <form method="POST"
+              action="{{ url_for('update_booking_status', booking_id=booking.booking_id) }}"
+              class="booking-action-form">
+            <input type="hidden" name="status" value="Confirmed">
+            <button type="submit" class="booking-action-btn confirm-btn">
+                <i class="bi bi-check-circle"></i> Confirm
+            </button>
+        </form>
+
+```
+    <form method="POST"
+          action="{{ url_for('update_booking_status', booking_id=booking.booking_id) }}"
+          class="booking-action-form"
+          onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+        <input type="hidden" name="status" value="Cancelled">
+        <button type="submit" class="booking-action-btn cancel-btn">
+            <i class="bi bi-x-circle"></i> Cancel
+        </button>
+    </form>
+
+{% elif status_text == 'confirmed' %}
+    <form method="POST"
+          action="{{ url_for('update_booking_status', booking_id=booking.booking_id) }}"
+          class="booking-action-form"
+          onsubmit="return confirm('Mark this service as completed?');">
+        <input type="hidden" name="status" value="Completed">
+        <button type="submit" class="booking-action-btn complete-btn">
+            <i class="bi bi-check2-all"></i> Mark Completed
+        </button>
+    </form>
+
+    <form method="POST"
+          action="{{ url_for('update_booking_status', booking_id=booking.booking_id) }}"
+          class="booking-action-form"
+          onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+        <input type="hidden" name="status" value="Cancelled">
+        <button type="submit" class="booking-action-btn cancel-btn">
+            <i class="bi bi-x-circle"></i> Cancel
+        </button>
+    </form>
+
+{% else %}
+    <span class="booking-no-action">No further action</span>
+{% endif %}
+
 </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="admin-empty-cell">No bookings found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="admin-no-results" data-for="bookingsTable" hidden>
+                    No matching bookings found.
+                </p>
+            </div>
+        </section>
 
-<td>
-    {{ booking.service_type }}
-</td>
+        <footer class="admin-footer">
+            <span><i class="bi bi-shield-check"></i> DriveCare Administration</span>
+            <span>Displaying {{ total_users }} users, {{ total_vehicles }} vehicles and {{ total_bookings }} bookings</span>
+        </footer>
 
-<td>
-    {{ booking.booking_date }}
-</td>
+    </div>
+</section>
 
-<td>
-    {{ booking.status }}
-</td>
+<style>
+    .admin-page {
+        min-height: 80vh;
+        padding: 38px 20px 60px;
+        background: #f5f7fb;
+        font-family: 'Poppins', sans-serif;
+    }
 
-</tr>
+    .admin-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
 
-{% endfor %}
+    .admin-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 38px;
+    }
 
-</table>
+    .admin-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        color: #2864dc;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+    }
 
-</body>
-</html>
+    .admin-header h1 {
+        margin: 0 0 8px;
+        color: #17233e;
+        font-size: clamp(28px, 4vw, 36px);
+        font-weight: 700;
+        letter-spacing: -1px;
+    }
+
+    .admin-header > div:first-child > p {
+        margin: 0;
+        color: #7b879b;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .admin-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border: 1px solid #e7ebf3;
+        border-radius: 13px;
+        background: #fff;
+    }
+
+    .admin-profile-icon {
+        display: flex;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 21px;
+    }
+
+    .admin-profile strong,
+    .admin-profile span {
+        display: block;
+    }
+
+    .admin-profile strong {
+        color: #263651;
+        font-size: 12px;
+    }
+
+    .admin-profile div:last-child span {
+        margin-top: 4px;
+        color: #8994a7;
+        font-size: 10px;
+    }
+
+    .admin-section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .admin-section-heading h2 {
+        margin: 0 0 6px;
+        color: #17233e;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .admin-section-heading p {
+        margin: 0;
+        color: #7b879b;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .admin-live-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 11px;
+        border: 1px solid #e4e9f2;
+        border-radius: 20px;
+        background: #fff;
+        color: #68758c;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .admin-live-label span {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #15945a;
+    }
+
+    .admin-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 37px;
+    }
+
+    .admin-stat-card {
+        min-width: 0;
+        padding: 21px;
+        border: 1px solid #e7ebf3;
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 5px 18px rgba(24, 39, 75, .03);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .admin-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(24, 39, 75, .07);
+    }
+
+    .admin-stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .admin-stat-label {
+        color: #7b879b;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .admin-stat-icon,
+    .quick-icon {
+        display: flex;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 19px;
+    }
+
+    .icon-users {
+        background: #edf3ff;
+        color: #2864dc;
+    }
+
+    .icon-vehicles {
+        background: #e8f8f1;
+        color: #168b59;
+    }
+
+    .icon-bookings {
+        background: #f1eaff;
+        color: #8154cb;
+    }
+
+    .icon-pending {
+        background: #fff4df;
+        color: #bd7b17;
+    }
+
+    .icon-completed {
+        background: #e2f8eb;
+        color: #168451;
+    }
+
+    .admin-stat-card h3 {
+        margin: 20px 0 5px;
+        color: #17233e;
+        font-size: clamp(25px, 2.5vw, 32px);
+        font-weight: 700;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-stat-card > p {
+        margin: 0;
+        color: #8994a7;
+        font-size: 10px;
+    }
+
+    .admin-quick-heading {
+        margin-bottom: 16px;
+    }
+
+    .admin-quick-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 38px;
+    }
+
+    .admin-quick-card {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 14px;
+        padding: 18px;
+        border: 1px solid #e7ebf3;
+        border-radius: 14px;
+        background: #fff;
+        color: inherit;
+        text-decoration: none;
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .admin-quick-card:hover {
+        transform: translateY(-2px);
+        border-color: #cad9f8;
+        box-shadow: 0 8px 22px rgba(24, 39, 75, .05);
+    }
+
+    .admin-quick-card > span:nth-child(2) {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .admin-quick-card strong,
+    .admin-quick-card small {
+        display: block;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-quick-card strong {
+        color: #263651;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .admin-quick-card small {
+        margin-top: 6px;
+        color: #8994a7;
+        font-size: 10px;
+    }
+
+    .quick-arrow {
+        color: #a0aabc;
+        font-size: 16px;
+    }
+
+    .admin-table-panel {
+        min-width: 0;
+        margin-bottom: 28px;
+        overflow: hidden;
+        border: 1px solid #e7ebf3;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 5px 22px rgba(24, 39, 75, .03);
+        scroll-margin-top: 25px;
+    }
+
+    .admin-table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 24px 25px 20px;
+    }
+
+    .admin-table-header h2 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 7px;
+        color: #17233e;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .admin-table-header h2 > i {
+        color: #2864dc;
+        font-size: 19px;
+    }
+
+    .admin-table-header p {
+        margin: 0;
+        color: #8994a7;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .admin-record-count {
+        padding: 7px 10px;
+        border-radius: 8px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .admin-search-row {
+        padding: 0 25px 18px;
+    }
+
+    .admin-search-box {
+        position: relative;
+        max-width: 420px;
+    }
+
+    .admin-search-box > i {
+        position: absolute;
+        top: 50%;
+        left: 13px;
+        color: #929caf;
+        font-size: 14px;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .admin-search-box input {
+        width: 100%;
+        min-height: 42px;
+        padding: 10px 13px 10px 37px;
+        border: 1px solid #e3e8f1;
+        border-radius: 9px;
+        outline: none;
+        background: #fbfcfe;
+        color: #34425c;
+        font-family: inherit;
+        font-size: 11px;
+    }
+
+    .admin-search-box input:focus {
+        border-color: #7da2f1;
+        box-shadow: 0 0 0 3px rgba(40, 100, 220, .08);
+    }
+
+    .admin-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        border-top: 1px solid #edf0f6;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .admin-table thead {
+        background: #f8fafd;
+    }
+
+    .admin-table th {
+        padding: 14px 20px;
+        color: #8a96aa;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: .7px;
+    }
+
+    .admin-table td {
+        padding: 15px 20px;
+        border-top: 1px solid #f0f2f7;
+        color: #53617a;
+        font-size: 11px;
+        vertical-align: middle;
+    }
+
+    .admin-table tbody tr {
+        transition: background .15s ease;
+    }
+
+    .admin-table tbody tr:hover {
+        background: #fafbfe;
+    }
+
+    .admin-user-cell,
+    .admin-vehicle-cell {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .admin-avatar {
+        display: flex;
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .admin-user-cell strong,
+    .admin-user-cell small,
+    .admin-vehicle-cell strong,
+    .admin-vehicle-cell small,
+    .admin-customer-cell strong,
+    .admin-customer-cell small {
+        display: block;
+    }
+
+    .admin-user-cell strong,
+    .admin-vehicle-cell strong,
+    .admin-customer-cell strong {
+        color: #34425c;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .admin-user-cell small,
+    .admin-vehicle-cell small,
+    .admin-customer-cell small {
+        margin-top: 5px;
+        color: #929caf;
+        font-size: 10px;
+    }
+
+    .admin-row-icon {
+        display: flex;
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: #e8f8f1;
+        color: #168b59;
+        font-size: 17px;
+    }
+
+    .admin-role-badge,
+    .registration-badge,
+    .admin-booking-id {
+        display: inline-block;
+        padding: 6px 9px;
+        border-radius: 7px;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .role-admin {
+        background: #f1eaff;
+        color: #8154cb;
+    }
+
+    .role-user {
+        background: #edf3ff;
+        color: #2864dc;
+    }
+
+    .registration-badge {
+        border: 1px solid #e5eaf3;
+        background: #f8fafd;
+        color: #465570;
+        letter-spacing: .3px;
+    }
+
+    .admin-booking-id {
+        background: #edf3ff;
+        color: #2864dc;
+    }
+
+    .admin-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .admin-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .status-pending {
+        background: #fff4df;
+        color: #ad6b0c;
+    }
+
+    .status-confirmed,
+    .status-approved {
+        background: #edf3ff;
+        color: #285ec4;
+    }
+
+    .status-completed,
+    .status-done {
+        background: #e2f8eb;
+        color: #168451;
+    }
+
+    .status-cancelled,
+    .status-canceled,
+    .status-rejected {
+        background: #ffebeb;
+        color: #c43b42;
+    }
+
+    .admin-empty-cell {
+        padding: 35px !important;
+        color: #8994a7 !important;
+        text-align: center;
+    }
+
+    .admin-no-results {
+        margin: 0;
+        padding: 25px;
+        color: #8994a7;
+        font-size: 12px;
+    }
+
+    .booking-action-form {
+display: inline-block;
+margin: 2px 4px 2px 0;
+}
+
+.booking-action-btn {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 5px;
+padding: 8px 11px;
+border: 1px solid transparent;
+border-radius: 8px;
+font-family: inherit;
+font-size: 10px;
+font-weight: 600;
+white-space: nowrap;
+cursor: pointer;
+transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.booking-action-btn:hover {
+transform: translateY(-1px);
+opacity: 0.88;
+}
+
+.confirm-btn {
+background: #edf3ff;
+border-color: #d8e5ff;
+color: #285ec4;
+}
+
+.complete-btn {
+background: #e2f8eb;
+border-color: #c5efd6;
+color: #168451;
+}
+
+.cancel-btn {
+background: #ffebeb;
+border-color: #ffd5d5;
+color: #c43b42;
+}
+
+.booking-no-action {
+color: #8994a7;
+font-size: 10px;
+}
+
+
+ </style>
+{% endblock %}

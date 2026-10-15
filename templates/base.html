@@ -1,51 +1,458 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="DriveCare — Manage your vehicles and book automotive services with ease.">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}DriveCare | Vehicle Service Management{% endblock %}</title>
 
-<title>{% block title %}DriveCare{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Bootstrap -->
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-<!-- Bootstrap Icons -->
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
 
-<!-- Google Font -->
+    <!-- Page-specific CSS -->
+    {% block extra_css %}{% endblock %}
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <style>
+        :root {
+            --dc-primary: #2563eb;
+            --dc-primary-dark: #1d4ed8;
+            --dc-navy: #0f172a;
+            --dc-text: #1e293b;
+            --dc-muted: #64748b;
+            --dc-border: #e2e8f0;
+            --dc-background: #f8fafc;
+            --dc-surface: #ffffff;
+            --dc-radius: 16px;
+            --dc-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+        }
 
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        * {
+            box-sizing: border-box;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
+        html {
+            min-height: 100%;
+            scroll-behavior: smooth;
+        }
 
-<link rel="stylesheet"
-href="{{ url_for('static', filename='css/style.css') }}">
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Poppins', sans-serif;
+            color: var(--dc-text);
+            background: var(--dc-background);
+            -webkit-font-smoothing: antialiased;
+        }
 
+        a {
+            text-decoration: none;
+        }
+
+        .dc-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+            backdrop-filter: blur(14px);
+        }
+
+        .dc-navbar .container {
+            min-height: 76px;
+        }
+
+        .dc-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dc-navy);
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.7px;
+        }
+
+        .dc-brand:hover {
+            color: var(--dc-primary);
+        }
+
+        .dc-brand-icon {
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 13px;
+            box-shadow: 0 5px 14px rgba(37, 99, 235, 0.22);
+            font-size: 1.35rem;
+        }
+
+        .dc-brand-text span {
+            color: var(--dc-primary);
+        }
+
+        .dc-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dc-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 13px;
+            color: #475569;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+
+        .dc-nav-link:hover,
+        .dc-nav-link.active {
+            color: var(--dc-primary);
+            background: #eff6ff;
+        }
+
+        .dc-nav-link i {
+            font-size: 1rem;
+        }
+
+        .dc-user-badge {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--dc-primary);
+            background: #dbeafe;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .dc-main {
+            flex: 1;
+            width: 100%;
+            padding-top: 32px;
+            padding-bottom: 48px;
+        }
+
+        .dc-flash-container {
+            margin-bottom: 22px;
+        }
+
+        .dc-flash {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            padding: 15px 18px;
+            border: 1px solid var(--dc-border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .dc-flash i {
+            margin-top: 2px;
+            font-size: 1.1rem;
+        }
+
+        .dc-flash-success {
+            color: #166534;
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .dc-flash-danger,
+        .dc-flash-error {
+            color: #991b1b;
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .dc-flash-warning {
+            color: #92400e;
+            background: #fffbeb;
+            border-color: #fde68a;
+        }
+
+        .dc-flash-info {
+            color: #1e40af;
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .dc-footer {
+            margin-top: auto;
+            padding: 25px 0;
+            color: #94a3b8;
+            background: #ffffff;
+            border-top: 1px solid var(--dc-border);
+            font-size: 0.82rem;
+        }
+
+        .dc-footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .dc-footer-brand {
+            color: var(--dc-navy);
+            font-weight: 700;
+        }
+
+        .dc-footer-brand i {
+            margin-right: 5px;
+            color: var(--dc-primary);
+        }
+
+        .dc-footer-tagline {
+            margin: 0;
+        }
+
+        .btn {
+            border-radius: 10px;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--dc-primary);
+            border-color: var(--dc-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--dc-primary-dark);
+            border-color: var(--dc-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 45px;
+            border-color: #dbe3ef;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        @media (max-width: 991.98px) {
+            .dc-navbar .container {
+                min-height: 68px;
+            }
+
+            .dc-nav-links {
+                align-items: stretch;
+                gap: 4px;
+                padding: 12px 0 16px;
+            }
+
+            .dc-nav-link {
+                padding: 11px 13px;
+            }
+
+            .dc-main {
+                padding-top: 24px;
+                padding-bottom: 36px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .dc-brand {
+                font-size: 1.2rem;
+            }
+
+            .dc-brand-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 1.2rem;
+            }
+
+            .dc-footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 7px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-{% include 'navbar.html' %}
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg dc-navbar">
+        <div class="container">
 
-<div class="container py-5">
+<a class="navbar-brand dc-brand"
+   href="{{ url_for('dashboard') if current_user.is_authenticated else url_for('home') }}">
+    <span class="dc-brand-icon">
+        <i class="bi bi-car-front-fill"></i>
+    </span>
+    <span class="dc-brand-text">Drive<span>Care</span></span>
+</a>
 
-{% block content %}
+            <button class="navbar-toggler border-0 shadow-none"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#dcNavbar"
+                    aria-controls="dcNavbar"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <i class="bi bi-list fs-2"></i>
+            </button>
 
-{% endblock %}
+            <div class="collapse navbar-collapse" id="dcNavbar">
+                <div class="ms-auto dc-nav-links">
 
-</div>
+                    {% if current_user.is_authenticated %}
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                        <a class="dc-nav-link" href="{{ url_for('my_vehicles') }}">
+                            <i class="bi bi-car-front"></i>
+                            My Vehicles
+                        </a>
+
+                        <a class="dc-nav-link" href="{{ url_for('my_bookings') }}">
+                            <i class="bi bi-calendar2-check"></i>
+                            My Bookings
+                        </a>
+
+                        {% if current_user.role == 'admin' %}
+                            <a class="dc-nav-link" href="{{ url_for('admin_dashboard') }}">
+                                <i class="bi bi-speedometer2"></i>
+                                Admin
+                            </a>
+                        {% endif %}
+
+                        <div class="d-flex align-items-center gap-2 ms-lg-2 mt-2 mt-lg-0">
+                            <span class="dc-user-badge">
+                                {{ current_user.full_name[0]|upper if current_user.full_name else 'U' }}
+                            </span>
+
+                            <div class="d-flex flex-column me-2">
+                                <span class="fw-semibold small text-dark">
+                                    {{ current_user.full_name }}
+                                </span>
+                                <span class="text-secondary" style="font-size: 0.72rem;">
+                                    {{ current_user.role|title }}
+                                </span>
+                            </div>
+
+                            <a class="btn btn-outline-secondary btn-sm px-3"
+                               href="{{ url_for('logout') }}">
+                                <i class="bi bi-box-arrow-right me-1"></i>
+                                Logout
+                            </a>
+                        </div>
+
+                    {% else %}
+
+                        <a class="dc-nav-link" href="{{ url_for('home') }}">
+                            <i class="bi bi-house"></i>
+                            Home
+                        </a>
+
+                        <a class="dc-nav-link" href="{{ url_for('login') }}">
+                            Login
+                        </a>
+
+                        <a class="btn btn-primary px-4 ms-lg-2"
+                           href="{{ url_for('register') }}">
+                            Get Started
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Page Content -->
+    <main class="dc-main">
+        <div class="container">
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="dc-flash-container" aria-live="polite">
+                        {% for category, message in messages %}
+                            <div class="dc-flash dc-flash-{{ category }} alert-dismissible"
+                                 role="alert">
+                                {% if category == 'success' %}
+                                    <i class="bi bi-check-circle-fill"></i>
+                                {% elif category == 'danger' or category == 'error' %}
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                {% elif category == 'warning' %}
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                {% else %}
+                                    <i class="bi bi-info-circle-fill"></i>
+                                {% endif %}
+
+                                <div class="flex-grow-1">{{ message }}</div>
+
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    {% include "footer.html" %}
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Page-specific JavaScript -->
+    {% block extra_js %}{% endblock %}
+
+    <script>
+    window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+
 
 </body>
-
 </html>

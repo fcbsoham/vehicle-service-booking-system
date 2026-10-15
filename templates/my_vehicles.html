@@ -1,57 +1,551 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Vehicles</title>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}My Vehicles | DriveCare{% endblock %}
 
-<h1>My Vehicles</h1>
+{% block content %}
 
-<a href="/add_vehicle">
-    <button>Add Vehicle</button>
-</a>
+<style>
+    .vehicles-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 0 35px;
+        color: #172b4d;
+    }
 
-<hr>
+    .vehicles-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
 
-{% for vehicle in vehicles %}
+    .vehicles-eyebrow {
+        display: inline-block;
+        color: #2563eb;
+        background: #eff6ff;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
 
-<h3>{{ vehicle.brand }} {{ vehicle.model }}</h3>
+    .vehicles-header h1 {
+        font-size: clamp(27px, 4vw, 36px);
+        font-weight: 700;
+        letter-spacing: -1px;
+        margin: 0 0 9px;
+        color: #172b4d;
+    }
 
-<p>
-Year: {{ vehicle.year }}
-</p>
+    .vehicles-header p {
+        color: #64748b;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.7;
+    }
 
-<p>
-Registration: {{ vehicle.registration_number }}
-</p>
+    .add-vehicle-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        background: #2563eb;
+        color: white;
+        padding: 13px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        border: 1px solid #2563eb;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
 
-<p>
-Fuel: {{ vehicle.fuel_type }}
-</p>
+    .add-vehicle-btn:hover {
+        background: #1d4ed8;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 7px 18px rgba(37, 99, 235, 0.18);
+    }
 
+    .vehicle-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 20px 24px;
+        background: white;
+        border: 1px solid #e8edf5;
+        border-radius: 14px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.025);
+    }
 
-<a href="{{ url_for('edit_vehicle', vehicle_id=vehicle.vehicle_id) }}">
-    <button>Edit</button>
-</a>
+    .summary-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
 
+    .summary-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 23px;
+        flex-shrink: 0;
+    }
 
-<a href="{{ url_for('delete_vehicle', vehicle_id=vehicle.vehicle_id) }}"
-   onclick="return confirm('Are you sure you want to delete this vehicle?');">
+    .summary-label {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
 
-    <button>Delete</button>
+    .summary-value {
+        font-size: 23px;
+        font-weight: 700;
+        color: #172b4d;
+        line-height: 1.2;
+    }
 
-</a>
+    .summary-note {
+        color: #64748b;
+        font-size: 12px;
+        text-align: right;
+    }
 
+    .vehicle-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
 
-<hr>
+    .vehicle-card {
+        background: #ffffff;
+        border: 1px solid #e5eaf2;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+        box-shadow: 0 5px 20px rgba(15, 23, 42, 0.035);
+        min-width: 0;
+    }
 
-{% else %}
+    .vehicle-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.085);
+    }
 
-<p>No vehicles added yet.</p>
+    .vehicle-card-top {
+        background: linear-gradient(135deg, #f1f6ff, #f8faff);
+        padding: 24px 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        border-bottom: 1px solid #eaf0fa;
+    }
 
-{% endfor %}
+    .vehicle-icon {
+        width: 58px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border: 1px solid #e2eaf8;
+        border-radius: 15px;
+        color: #2563eb;
+        font-size: 29px;
+        flex-shrink: 0;
+    }
 
+    .vehicle-id {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
 
-</body>
-</html>
+    .vehicle-card-body {
+        padding: 23px 25px 25px;
+    }
+
+    .vehicle-name {
+        font-size: 21px;
+        font-weight: 700;
+        color: #172b4d;
+        margin: 0 0 7px;
+        overflow-wrap: anywhere;
+    }
+
+    .vehicle-year {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 22px;
+    }
+
+    .vehicle-details {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .vehicle-detail {
+        padding: 13px;
+        background: #f8fafc;
+        border: 1px solid #edf1f6;
+        border-radius: 10px;
+        min-width: 0;
+    }
+
+    .detail-label {
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+    }
+
+    .detail-value {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #243b5a;
+        overflow-wrap: anywhere;
+    }
+
+    .fuel-badge {
+        display: inline-block;
+        background: #ecfdf5;
+        color: #047857;
+        border-radius: 6px;
+        padding: 5px 9px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .vehicle-actions {
+        display: flex;
+        gap: 10px;
+        padding-top: 19px;
+        border-top: 1px solid #edf1f6;
+    }
+
+    .vehicle-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 15px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        flex: 1;
+    }
+
+    .edit-action {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+    }
+
+    .edit-action:hover {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .delete-action {
+        background: #fff5f5;
+        color: #dc2626;
+        border: 1px solid #fee2e2;
+    }
+
+    .delete-action:hover {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .empty-vehicles {
+        background: white;
+        border: 1px dashed #cbd5e1;
+        border-radius: 18px;
+        padding: 60px 25px;
+        text-align: center;
+    }
+
+    .empty-vehicle-icon {
+        width: 78px;
+        height: 78px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+        background: #eff6ff;
+        color: #2563eb;
+        border-radius: 22px;
+        font-size: 36px;
+    }
+
+    .empty-vehicles h2 {
+        font-size: 23px;
+        font-weight: 700;
+        color: #172b4d;
+        margin-bottom: 10px;
+    }
+
+    .empty-vehicles p {
+        max-width: 420px;
+        margin: 0 auto 25px;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .vehicles-footer-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: 28px;
+        padding: 17px 20px;
+        background: #f8fafc;
+        border: 1px solid #e8edf5;
+        border-radius: 12px;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .vehicles-footer-note i {
+        color: #2563eb;
+        font-size: 17px;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+        .vehicle-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .vehicles-header {
+            align-items: flex-start;
+        }
+
+        .add-vehicle-btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .vehicle-card-top,
+        .vehicle-card-body {
+            padding-left: 17px;
+            padding-right: 17px;
+        }
+
+        .vehicle-summary {
+            padding: 17px;
+        }
+
+        .vehicle-details {
+            gap: 8px;
+        }
+
+        .vehicle-detail {
+            padding: 10px;
+        }
+
+        .vehicle-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="vehicles-page">
+
+    <!-- Page Header -->
+    <div class="vehicles-header">
+        <div>
+            <span class="vehicles-eyebrow">
+                <i class="bi bi-car-front-fill"></i>
+                Vehicle Management
+            </span>
+
+            <h1>My Vehicles</h1>
+
+            <p>
+                Manage your registered vehicles and keep their details
+                ready for your next service appointment.
+            </p>
+        </div>
+
+        <a href="{{ url_for('add_vehicle') }}" class="add-vehicle-btn">
+            <i class="bi bi-plus-lg"></i>
+            Add New Vehicle
+        </a>
+    </div>
+
+    <!-- Vehicle Summary -->
+    <div class="vehicle-summary">
+        <div class="summary-left">
+            <div class="summary-icon">
+                <i class="bi bi-car-front-fill"></i>
+            </div>
+
+            <div>
+                <div class="summary-label">Your registered vehicles</div>
+                <div class="summary-value">{{ vehicles|length }}</div>
+            </div>
+        </div>
+
+        <div class="summary-note">
+            <i class="bi bi-shield-check"></i>
+            Your vehicles, all in one place
+        </div>
+    </div>
+
+    <!-- Vehicle Cards -->
+    {% if vehicles %}
+
+        <div class="vehicle-grid">
+
+            {% for vehicle in vehicles %}
+
+                <article class="vehicle-card">
+
+                    <div class="vehicle-card-top">
+                        <div class="vehicle-icon">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+
+                        <div class="vehicle-id">
+                            Vehicle #{{ vehicle.vehicle_id }}
+                        </div>
+                    </div>
+
+                    <div class="vehicle-card-body">
+
+                        <h2 class="vehicle-name">
+                            {{ vehicle.brand }} {{ vehicle.model }}
+                        </h2>
+
+                        <div class="vehicle-year">
+                            <i class="bi bi-calendar3"></i>
+                            Model year: {{ vehicle.year }}
+                        </div>
+
+                        <div class="vehicle-details">
+
+                            <div class="vehicle-detail">
+                                <span class="detail-label">
+                                    <i class="bi bi-card-text"></i>
+                                    Registration
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ vehicle.registration_number }}
+                                </span>
+                            </div>
+
+                            <div class="vehicle-detail">
+                                <span class="detail-label">
+                                    <i class="bi bi-fuel-pump"></i>
+                                    Fuel Type
+                                </span>
+
+                                <span class="detail-value">
+                                    <span class="fuel-badge">
+                                        {{ vehicle.fuel_type }}
+                                    </span>
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="vehicle-actions">
+
+                            <a
+                                href="{{ url_for('edit_vehicle', vehicle_id=vehicle.vehicle_id) }}"
+                                class="vehicle-action edit-action"
+                            >
+                                <i class="bi bi-pencil-square"></i>
+                                Edit Details
+                            </a>
+
+                            <a
+                                href="{{ url_for('delete_vehicle', vehicle_id=vehicle.vehicle_id) }}"
+                                class="vehicle-action delete-action"
+                                onclick="return confirm('Are you sure you want to delete {{ vehicle.brand }} {{ vehicle.model }}? This action cannot be undone.');"
+                            >
+                                <i class="bi bi-trash3"></i>
+                                Delete
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <!-- Empty State -->
+        <div class="empty-vehicles">
+
+            <div class="empty-vehicle-icon">
+                <i class="bi bi-car-front"></i>
+            </div>
+
+            <h2>No vehicles registered yet</h2>
+
+            <p>
+                Add your first vehicle to get started.
+                Once registered, you can manage its details
+                and book vehicle servicing through DriveCare.
+            </p>
+
+            <a href="{{ url_for('add_vehicle') }}" class="add-vehicle-btn">
+                <i class="bi bi-plus-lg"></i>
+                Register Your First Vehicle
+            </a>
+
+        </div>
+
+    {% endif %}
+
+    <!-- Footer Information -->
+    <div class="vehicles-footer-note">
+        <i class="bi bi-info-circle"></i>
+
+        <div>
+            <strong>Keep your vehicle details up to date.</strong>
+            Make sure the registration number, model year, and fuel type
+            are correct before booking a service.
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

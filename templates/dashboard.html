@@ -1,101 +1,1295 @@
 {% extends 'base.html' %}
 
 {% block title %}
-
-Dashboard
-
+Dashboard | DriveCare
 {% endblock %}
 
 {% block content %}
 
-<h2 class="mb-4">
+<style>
+    .dashboard-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 28px 0 45px;
+        color: #243047;
+    }
 
-Welcome,
+    .dashboard-wrapper a {
+        text-decoration: none;
+    }
 
-{{ current_user.full_name }}
+    /* Welcome banner */
+
+    .dashboard-welcome {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        min-height: 245px;
+        margin-bottom: 35px;
+        padding: 40px 45px;
+        overflow: hidden;
+        border-radius: 22px;
+        background: linear-gradient(115deg, #111d38 0%, #1b3971 65%, #2859a5 100%);
+        box-shadow: 0 14px 35px rgba(25, 54, 106, 0.16);
+        color: #ffffff;
+    }
+
+    .dashboard-welcome::before {
+        content: "";
+        position: absolute;
+        top: -125px;
+        right: 100px;
+        width: 340px;
+        height: 340px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 50%;
+        box-shadow:
+            0 0 0 35px rgba(255, 255, 255, 0.025),
+            0 0 0 70px rgba(255, 255, 255, 0.025);
+        pointer-events: none;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 2;
+        max-width: 620px;
+    }
+
+    .welcome-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 17px;
+        padding: 8px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.09);
+        color: #dbe8ff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+    }
+
+    .welcome-label i {
+        color: #8db7ff;
+        font-size: 13px;
+    }
+
+    .dashboard-welcome h1 {
+        margin: 0 0 13px;
+        color: #ffffff;
+        font-size: clamp(27px, 3vw, 39px);
+        font-weight: 800;
+        letter-spacing: -1.2px;
+        line-height: 1.3;
+    }
+
+    .dashboard-welcome h1 span {
+        color: #9fc2ff;
+    }
+
+    .dashboard-welcome p {
+        max-width: 530px;
+        margin: 0 0 24px;
+        color: #d0dbef;
+        font-size: 13px;
+        line-height: 1.9;
+    }
+
+    .welcome-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 45px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #1d4ed8;
+        font-size: 12px;
+        font-weight: 700;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .welcome-button:hover {
+        transform: translateY(-2px);
+        background: #f0f5ff;
+        color: #1d4ed8;
+        box-shadow: 0 7px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .welcome-decoration {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 195px;
+        height: 170px;
+        margin-right: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 35px;
+        background: rgba(255, 255, 255, 0.07);
+        transform: rotate(-5deg);
+    }
+
+    .welcome-decoration i {
+        color: rgba(255, 255, 255, 0.94);
+        font-size: 115px;
+        transform: rotate(5deg);
+        filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.15));
+    }
+
+    /* Section headings */
+
+    .dashboard-section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-section-heading h2 {
+        margin: 0 0 6px;
+        color: #14213d;
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .dashboard-section-heading p {
+        margin: 0;
+        color: #7b879b;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .account-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+        padding: 10px 14px;
+        border: 1px solid #dce8fc;
+        border-radius: 30px;
+        background: #f0f6ff;
+        color: #2556a5;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .account-badge i {
+        font-size: 15px;
+    }
+
+    /* Statistics */
+
+    .dashboard-stats {
+        margin-bottom: 38px;
+    }
+
+    .dashboard-stat-card {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        height: 100%;
+        min-height: 155px;
+        padding: 23px;
+        border: 1px solid #e9edf4;
+        border-radius: 17px;
+        background: #ffffff;
+        box-shadow: 0 5px 18px rgba(23, 42, 78, 0.035);
+        transition: transform 0.2s ease, box-shadow 0.2s ease,
+                    border-color 0.2s ease;
+    }
+
+    .dashboard-stat-card:hover {
+        transform: translateY(-4px);
+        border-color: #d8e4f8;
+        box-shadow: 0 13px 28px rgba(23, 42, 78, 0.08);
+    }
+
+    .stat-icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 49px;
+        height: 49px;
+        border-radius: 14px;
+        font-size: 23px;
+    }
+
+    .stat-icon-blue {
+        background: #eaf2ff;
+        color: #2864d7;
+    }
+
+    .stat-icon-green {
+        background: #e7f8ef;
+        color: #16865d;
+    }
+
+    .stat-icon-orange {
+        background: #fff2e3;
+        color: #d97706;
+    }
+
+    .stat-icon-purple {
+        background: #f1eaff;
+        color: #8050c9;
+    }
+
+    .stat-details {
+        min-width: 0;
+        padding-top: 2px;
+    }
+
+    .stat-details p {
+        margin: 0 0 8px;
+        color: #6f7b90;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .stat-details h3 {
+        margin: 0 0 7px;
+        overflow-wrap: anywhere;
+        color: #14213d;
+        font-size: 29px;
+        font-weight: 800;
+        letter-spacing: -0.7px;
+    }
+
+    .stat-details span {
+        display: block;
+        color: #929caf;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .stat-link {
+        position: absolute;
+        top: 17px;
+        right: 17px;
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: #f5f7fb;
+        color: #71809a;
+        font-size: 15px;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    a.stat-link:hover {
+        background: #e8f0ff;
+        color: #2563eb;
+    }
+
+    .stat-link-static {
+        background: #f6f2ff;
+        color: #8050c9;
+    }
+
+    /* Quick actions */
+
+    .dashboard-actions-section {
+        margin-bottom: 38px;
+    }
+
+    .dashboard-actions-section .dashboard-section-heading {
+        margin-bottom: 20px;
+    }
+
+    .action-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 17px;
+        height: 100%;
+        min-height: 185px;
+        padding: 24px;
+        border: 1px solid #e8edf4;
+        border-radius: 17px;
+        background: #ffffff;
+        color: #243047;
+        box-shadow: 0 5px 18px rgba(23, 42, 78, 0.035);
+        transition: transform 0.2s ease, box-shadow 0.2s ease,
+                    border-color 0.2s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-4px);
+        border-color: #cbdcf9;
+        box-shadow: 0 13px 28px rgba(23, 42, 78, 0.08);
+        color: #243047;
+    }
+
+    .action-icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 49px;
+        height: 49px;
+        border-radius: 14px;
+        font-size: 23px;
+        transition: transform 0.2s ease;
+    }
+
+    .action-card:hover .action-icon {
+        transform: scale(1.06);
+    }
+
+    .action-icon-blue {
+        background: #eaf2ff;
+        color: #2864d7;
+    }
+
+    .action-icon-green {
+        background: #e7f8ef;
+        color: #16865d;
+    }
+
+    .action-icon-orange {
+        background: #fff2e3;
+        color: #d97706;
+    }
+
+    .action-icon-dark {
+        background: #e9edf5;
+        color: #263c61;
+    }
+
+    .action-content {
+        min-width: 0;
+    }
+
+    .action-content h3 {
+        margin: 3px 0 10px;
+        color: #182541;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .action-content p {
+        margin: 0 0 18px;
+        color: #7b879b;
+        font-size: 11px;
+        line-height: 1.9;
+    }
+
+    .action-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .action-link i {
+        transition: transform 0.2s ease;
+    }
+
+    .action-card:hover .action-link i {
+        transform: translateX(4px);
+    }
+
+    /* Recent bookings */
+
+    .recent-bookings-panel {
+        margin-bottom: 32px;
+        overflow: hidden;
+        border: 1px solid #e8edf4;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow: 0 5px 18px rgba(23, 42, 78, 0.035);
+    }
+
+    .recent-bookings-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 23px 25px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .recent-bookings-header h2 {
+        margin: 0 0 6px;
+        color: #14213d;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .recent-bookings-header p {
+        margin: 0;
+        color: #7b879b;
+        font-size: 11px;
+    }
+
+    .view-all-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        flex-shrink: 0;
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .view-all-link:hover {
+        color: #1d4ed8;
+    }
+
+    .booking-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .booking-table {
+        width: 100%;
+        min-width: 570px;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .booking-table thead th {
+        padding: 15px 23px;
+        border: none;
+        background: #f8faff;
+        color: #7c879a;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .booking-table tbody td {
+        padding: 17px 23px;
+        border-bottom: 1px solid #f0f2f6;
+        color: #46536a;
+        font-size: 11px;
+        vertical-align: middle;
+    }
+
+    .booking-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .booking-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .booking-table tbody tr:hover {
+        background: #fafcff;
+    }
+
+    .booking-service {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: #23314b;
+        font-weight: 700;
+    }
+
+    .booking-service-icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        background: #edf3ff;
+        color: #3268cf;
+        font-size: 16px;
+    }
+
+    .booking-id {
+        display: block;
+        margin-top: 3px;
+        color: #929caf;
+        font-size: 10px;
+        font-weight: 400;
+    }
+
+    .booking-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 30px;
+        background: #f0f2f6;
+        color: #5f6b7e;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .booking-status::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .status-pending {
+        background: #fff4df;
+        color: #ad7200;
+    }
+
+    .status-confirmed,
+    .status-approved {
+        background: #eaf2ff;
+        color: #285fc3;
+    }
+
+    .status-completed,
+    .status-done {
+        background: #e6f7ee;
+        color: #178153;
+    }
+
+    .status-cancelled,
+    .status-rejected {
+        background: #fff0f0;
+        color: #c23b43;
+    }
+
+    .empty-bookings {
+        padding: 43px 20px;
+        text-align: center;
+    }
+
+    .empty-bookings-icon {
+        display: grid;
+        place-items: center;
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 16px;
+        border-radius: 18px;
+        background: #edf3ff;
+        color: #3268cf;
+        font-size: 26px;
+    }
+
+    .empty-bookings h3 {
+        margin: 0 0 8px;
+        color: #1b2944;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .empty-bookings p {
+        margin: 0 auto 19px;
+        color: #7b879b;
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .empty-bookings .btn {
+        padding: 10px 16px;
+        border-radius: 9px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    /* Bottom information panel */
+
+    .dashboard-info-panel {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+        padding: 23px 25px;
+        border: 1px solid #dfe9fa;
+        border-radius: 16px;
+        background: linear-gradient(100deg, #f0f6ff, #f8faff);
+    }
+
+    .info-panel-icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 46px;
+        height: 46px;
+        border-radius: 13px;
+        background: #dceaff;
+        color: #2864d7;
+        font-size: 22px;
+    }
+
+    .info-panel-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .info-panel-content h3 {
+        margin: 0 0 6px;
+        color: #1b2a46;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .info-panel-content p {
+        margin: 0;
+        color: #71809a;
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .info-panel-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-shrink: 0;
+        padding: 11px 16px;
+        border-radius: 9px;
+        background: #2563eb;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+        transition: background 0.2s ease;
+    }
+
+    .info-panel-button:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+    }
+
+    /* Responsive layout */
+
+    @media (min-width: 1200px) {
+        .dashboard-stats > div {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .dashboard-wrapper {
+            padding-top: 20px;
+        }
+
+        .dashboard-welcome {
+            padding: 32px;
+        }
+
+        .welcome-decoration {
+            width: 135px;
+            height: 135px;
+            margin-right: 5px;
+        }
+
+        .welcome-decoration i {
+            font-size: 85px;
+        }
+
+        .dashboard-stat-card {
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .dashboard-welcome {
+            min-height: 230px;
+            padding: 28px 24px;
+        }
+
+        .welcome-content {
+            max-width: 100%;
+        }
+
+        .dashboard-welcome h1 {
+            font-size: 29px;
+        }
+
+        .dashboard-welcome p {
+            max-width: 100%;
+            font-size: 12px;
+        }
+
+        .welcome-decoration {
+            position: absolute;
+            right: -20px;
+            bottom: -28px;
+            width: 120px;
+            height: 120px;
+            border-radius: 25px;
+            opacity: 0.20;
+        }
+
+        .welcome-decoration i {
+            font-size: 80px;
+        }
+
+        .dashboard-section-heading {
+            align-items: flex-start;
+        }
+
+        .account-badge {
+            padding: 8px 10px;
+            font-size: 10px;
+        }
+
+        .dashboard-info-panel {
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .info-panel-content {
+            flex-basis: calc(100% - 65px);
+        }
+
+        .info-panel-button {
+            margin-left: 63px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dashboard-wrapper {
+            padding-top: 12px;
+        }
+
+        .dashboard-welcome {
+            min-height: 235px;
+            margin-bottom: 28px;
+            padding: 25px 21px;
+            border-radius: 17px;
+        }
+
+        .dashboard-welcome h1 {
+            font-size: 26px;
+        }
+
+        .welcome-label {
+            font-size: 9px;
+        }
+
+        .dashboard-section-heading {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dashboard-section-heading h2 {
+            font-size: 19px;
+        }
+
+        .account-badge {
+            align-self: flex-start;
+        }
+
+        .dashboard-stat-card {
+            min-height: 135px;
+        }
+
+        .action-card {
+            min-height: 160px;
+            padding: 20px;
+        }
+
+        .recent-bookings-header {
+            align-items: flex-start;
+            padding: 19px;
+        }
+
+        .booking-table thead th,
+        .booking-table tbody td {
+            padding-right: 16px;
+            padding-left: 16px;
+        }
+
+        .dashboard-info-panel {
+            gap: 12px;
+        }
+
+        .info-panel-button {
+            margin-left: 0;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .dashboard-wrapper *,
+        .dashboard-wrapper *::before,
+        .dashboard-wrapper *::after {
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+
+<div class="dashboard-wrapper">
+
+<!-- Welcome banner -->
+<section class="dashboard-welcome">
+
+    <div class="welcome-content">
+
+        <span class="welcome-label">
+            <i class="bi bi-grid-1x2-fill"></i>
+            {% if current_user.role == "admin" %}
+                ADMINISTRATOR PORTAL
+            {% else %}
+                CUSTOMER PORTAL
+            {% endif %}
+        </span>
+
+        <h1>
+            Welcome back,<br>
+            <span>{{ current_user.full_name }}.</span>
+        </h1>
+
+        <p>
+            Your vehicle care, service bookings, and maintenance
+            history, all organized in one place.
+        </p>
+
+        <a href="{{ url_for('book_service') }}"
+           class="btn welcome-button">
+            <i class="bi bi-plus-circle"></i>
+            Book a Service
+            <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </div>
+
+    <div class="welcome-decoration" aria-hidden="true">
+        <i class="bi bi-car-front-fill"></i>
+    </div>
+
+</section>
 
 
-</h2>
+<!-- Overview heading -->
+<div class="dashboard-section-heading">
 
-<div class="row">
+    <div>
+        <h2>Account Overview</h2>
+        <p>A quick look at your vehicles and service activity.</p>
+    </div>
 
-<div class="col-md-4">
-
-<div class="card stat-card">
-
-<i class="bi bi-car-front-fill"></i>
-
-<h5>Total Vehicles</h5>
-
-<h2>{{ current_user.vehicles|length }}</h2>
+    <span class="account-badge">
+        <i class="bi bi-shield-check"></i>
+        {{ current_user.role|capitalize }} Account
+    </span>
 
 </div>
 
+<!-- Statistics cards -->
+<div class="row g-4 dashboard-stats">
+
+    <!-- Vehicles -->
+    <div class="col-12 col-sm-6 col-xl-3">
+
+        <div class="dashboard-stat-card">
+
+            <div class="stat-icon stat-icon-blue">
+                <i class="bi bi-car-front-fill"></i>
+            </div>
+
+            <div class="stat-details">
+                <p>Registered Vehicles</p>
+                <h3>{{ total_vehicles }}</h3>
+                <span>Your vehicles</span>
+            </div>
+
+            <a href="{{ url_for('my_vehicles') }}"
+               class="stat-link"
+               aria-label="View registered vehicles">
+                <i class="bi bi-arrow-up-right"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Total bookings -->
+    <div class="col-12 col-sm-6 col-xl-3">
+
+        <div class="dashboard-stat-card">
+
+            <div class="stat-icon stat-icon-green">
+                <i class="bi bi-calendar2-check"></i>
+            </div>
+
+            <div class="stat-details">
+                <p>Total Bookings</p>
+                <h3>{{ total_bookings }}</h3>
+<p>All your service requests</p>
+            </div>
+
+            <a href="{{ url_for('my_bookings') }}"
+               class="stat-link"
+               aria-label="View all bookings">
+                <i class="bi bi-arrow-up-right"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Pending bookings -->
+    <div class="col-12 col-sm-6 col-xl-3">
+
+        <div class="dashboard-stat-card">
+
+            <div class="stat-icon stat-icon-orange">
+                <i class="bi bi-clock-history"></i>
+            </div>
+
+            <div class="stat-details">
+                <p>Pending Bookings</p>
+                <h3>{{ pending_bookings }}</h3>
+<p>Awaiting service progress</p>
+            </div>
+
+            <a href="{{ url_for('my_bookings') }}"
+               class="stat-link"
+               aria-label="View pending bookings">
+                <i class="bi bi-arrow-up-right"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Completed bookings -->
+    <div class="col-12 col-sm-6 col-xl-3">
+
+        <div class="dashboard-stat-card">
+
+            <div class="stat-icon stat-icon-purple">
+                <i class="bi bi-check2-circle"></i>
+            </div>
+
+            <div class="stat-details">
+                <p>Completed Services</p>
+                <h3>{{ completed_bookings }}</h3>
+<p>Completed service bookings</p>
+            </div>
+
+            <a href="{{ url_for('my_bookings') }}"
+               class="stat-link"
+               aria-label="View completed bookings">
+                <i class="bi bi-arrow-up-right"></i>
+            </a>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="col-md-4">
 
-<div class="card stat-card">
+<!-- Quick actions -->
+<section class="dashboard-actions-section">
 
-<i class="bi bi-calendar-check"></i>
+    <div class="dashboard-section-heading">
 
-<h5>Total Bookings</h5>
+        <div>
+            <h2>Quick Actions</h2>
+            <p>Get things done without navigating through multiple pages.</p>
+        </div>
 
-<h2>{{ current_user.bookings|length }}</h2>
+    </div>
 
-</div>
 
-</div>
+    <div class="row g-4">
 
-<div class="col-md-4">
+        <!-- My vehicles -->
+        <div class="col-12 col-md-6 col-xl-4">
 
-<div class="card stat-card">
+            <a href="{{ url_for('my_vehicles') }}"
+               class="action-card">
 
-<i class="bi bi-person-circle"></i>
+                <div class="action-icon action-icon-blue">
+                    <i class="bi bi-car-front"></i>
+                </div>
 
-<h5>Account Type</h5>
+                <div class="action-content">
 
-<h2>{{ current_user.role }}</h2>
+                    <h3>My Vehicles</h3>
 
-</div>
+                    <p>
+                        View your registered vehicles and
+                        manage their details.
+                    </p>
 
-</div>
+                    <span class="action-link">
+                        Manage vehicles
+                        <i class="bi bi-arrow-right"></i>
+                    </span>
 
-</div>
+                </div>
 
-<div class="mt-5">
+            </a>
 
-<a class="btn btn-primary me-2"
-href="/my_vehicles">
+        </div>
 
-My Vehicles
 
-</a>
+        <!-- Add a vehicle -->
+        <div class="col-12 col-md-6 col-xl-4">
 
-<a class="btn btn-success me-2"
-href="/book_service">
+            <a href="{{ url_for('add_vehicle') }}"
+               class="action-card">
 
-Book Service
+                <div class="action-icon action-icon-green">
+                    <i class="bi bi-plus-circle"></i>
+                </div>
 
-</a>
+                <div class="action-content">
 
-<a class="btn btn-warning me-2"
-href="/my_bookings">
+                    <h3>Add a Vehicle</h3>
 
-My Bookings
+                    <p>
+                        Register another vehicle to keep
+                        its service information organized.
+                    </p>
 
-</a>
+                    <span class="action-link">
+                        Register vehicle
+                        <i class="bi bi-arrow-right"></i>
+                    </span>
 
-{% if current_user.role=="admin" %}
+                </div>
 
-<a class="btn btn-dark"
-href="/admin">
+            </a>
 
-Admin Dashboard
+        </div>
 
-</a>
 
-{% endif %}
+        <!-- Book a service -->
+        <div class="col-12 col-md-6 col-xl-4">
+
+            <a href="{{ url_for('book_service') }}"
+               class="action-card">
+
+                <div class="action-icon action-icon-orange">
+                    <i class="bi bi-tools"></i>
+                </div>
+
+                <div class="action-content">
+
+                    <h3>Book a Service</h3>
+
+                    <p>
+                        Schedule maintenance or request
+                        a service for one of your vehicles.
+                    </p>
+
+                    <span class="action-link">
+                        Schedule service
+                        <i class="bi bi-arrow-right"></i>
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- Booking history -->
+        <div class="col-12 col-md-6 col-xl-4">
+
+            <a href="{{ url_for('my_bookings') }}"
+               class="action-card">
+
+                <div class="action-icon action-icon-blue">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+
+                <div class="action-content">
+
+                    <h3>My Bookings</h3>
+
+                    <p>
+                        Review service requests and
+                        check the status of your bookings.
+                    </p>
+
+                    <span class="action-link">
+                        View booking history
+                        <i class="bi bi-arrow-right"></i>
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- Admin dashboard -->
+        {% if current_user.role == "admin" %}
+
+        <div class="col-12 col-md-6 col-xl-4">
+
+            <a href="{{ url_for('admin_dashboard') }}"
+               class="action-card">
+
+                <div class="action-icon action-icon-dark">
+                    <i class="bi bi-speedometer2"></i>
+                </div>
+
+                <div class="action-content">
+
+                    <h3>Admin Dashboard</h3>
+
+                    <p>
+                        Access administrative tools for
+                        managing users and service bookings.
+                    </p>
+
+                    <span class="action-link">
+                        Open administration
+                        <i class="bi bi-arrow-right"></i>
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- Recent bookings -->
+<section class="recent-bookings-panel">
+
+    <div class="recent-bookings-header">
+        <div>
+            <h2>Recent Bookings</h2>
+            <p>Your latest service requests at a glance.</p>
+        </div>
+
+        <a href="{{ url_for('my_bookings') }}" class="view-all-link">
+            View all
+            <i class="bi bi-arrow-up-right"></i>
+        </a>
+    </div>
+
+    {% if recent_bookings %}
+
+    <div class="booking-table-wrapper">
+        <table class="booking-table">
+
+            <thead>
+                <tr>
+                    <th>SERVICE</th>
+                    <th>BOOKING DATE</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for booking in recent_bookings %}
+                <tr>
+
+                    <td>
+                        <div class="booking-service">
+                            <span class="booking-service-icon">
+                                <i class="bi bi-tools"></i>
+                            </span>
+
+                            <span>
+                                {{ booking.service_type }}
+
+                                <span class="booking-id">
+                                    Booking #{{ booking.booking_id }}
+                                </span>
+                            </span>
+                        </div>
+                    </td>
+
+                    <td>
+                        {% if booking.booking_date %}
+                            {{ booking.booking_date.strftime('%d %b %Y') }}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% set status_text = booking.status|string %}
+                        {% set status_class = status_text|lower|replace(' ', '-') %}
+
+                        <span class="booking-status status-{{ status_class }}">
+                            {{ status_text|capitalize }}
+                        </span>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% else %}
+
+    <div class="empty-bookings">
+        <div class="empty-bookings-icon">
+            <i class="bi bi-calendar2-plus"></i>
+        </div>
+
+        <h3>No bookings yet</h3>
+
+        <p>
+            Your service bookings will appear here once you schedule
+            your first appointment.
+        </p>
+
+        <a href="{{ url_for('book_service') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+            Book Your First Service
+        </a>
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- Bottom information panel -->
+<section class="dashboard-info-panel">
+
+    <div class="info-panel-icon">
+        <i class="bi bi-info-circle"></i>
+    </div>
+
+    <div class="info-panel-content">
+
+        <h3>Keep your vehicle information up to date</h3>
+
+        <p>
+            Add your vehicles and maintain an organized service history
+            for easier booking management.
+        </p>
+
+    </div>
+
+    <a href="{{ url_for('add_vehicle') }}"
+       class="info-panel-button">
+        <i class="bi bi-plus-lg"></i>
+        Add Vehicle
+    </a>
+
+</section>
 
 </div>
 

@@ -1,66 +1,645 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>My Bookings</title>
-</head>
+{% block title %}My Bookings | DriveCare{% endblock %}
 
-<body>
+{% block content %}
+<section class="my-bookings-page">
+    <div class="bookings-container">
 
-<h1>My Service Bookings</h1>
+        <!-- Page Header -->
+        <div class="bookings-page-header">
+            <div>
+                <span class="bookings-eyebrow">
+                    <i class="bi bi-calendar-check"></i>
+                    SERVICE MANAGEMENT
+                </span>
+                <h1>My Bookings</h1>
+                <p>Track your vehicle service appointments and booking details.</p>
+            </div>
 
+            <a href="{{ url_for('book_service') }}" class="booking-primary-btn">
+                <i class="bi bi-plus-lg"></i>
+                Book a Service
+            </a>
+        </div>
 
-<a href="/book_service">
-    <button>Book New Service</button>
-</a>
+        <!-- Booking Summary -->
+        <div class="booking-summary-grid">
+            <div class="booking-summary-card">
+                <div class="booking-summary-icon summary-total">
+                    <i class="bi bi-calendar2-week"></i>
+                </div>
+                <div>
+                    <p>Total Bookings</p>
+                    <h2>{{ bookings|length }}</h2>
+                </div>
+            </div>
 
-<hr>
+            <div class="booking-summary-card">
+                <div class="booking-summary-icon summary-pending">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div>
+                    <p>Pending</p>
+                    <h2>
+                        {{ bookings|selectattr('status', 'equalto', 'Pending')|list|length }}
+                    </h2>
+                </div>
+            </div>
 
+            <div class="booking-summary-card">
+                <div class="booking-summary-icon summary-completed">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div>
+                    <p>Completed</p>
+                    <h2>
+                        {{ bookings|selectattr('status', 'equalto', 'Completed')|list|length }}
+                    </h2>
+                </div>
+            </div>
+        </div>
 
-{% for booking in bookings %}
+        <!-- Bookings List -->
+        <div class="bookings-list-section">
+            <div class="bookings-section-header">
+                <div>
+                    <h2>Your Service History</h2>
+                    <p>All your vehicle service requests in one place.</p>
+                </div>
+                <a href="{{ url_for('my_vehicles') }}" class="bookings-secondary-link">
+                    <i class="bi bi-car-front"></i>
+                    My Vehicles
+                </a>
+            </div>
 
+            {% if bookings %}
+                <div class="booking-cards-grid">
+                    {% for booking in bookings|sort(attribute='created_at', reverse=true) %}
+                        {% set status_text = (booking.status or 'Pending')|string|lower %}
+                        {% set status_class = status_text|replace(' ', '-') %}
 
-<h3>
-    {{ booking.service_type }}
-</h3>
+                        <article class="service-booking-card">
 
+                            <div class="service-booking-top">
+                                <div class="service-type-icon">
+                                    {% set service_name = (booking.service_type or '')|lower %}
+                                    {% if 'oil' in service_name %}
+                                        <i class="bi bi-droplet-half"></i>
+                                    {% elif 'wash' in service_name or 'clean' in service_name %}
+                                        <i class="bi bi-water"></i>
+                                    {% elif 'repair' in service_name %}
+                                        <i class="bi bi-wrench-adjustable"></i>
+                                    {% elif 'tire' in service_name or 'tyre' in service_name %}
+                                        <i class="bi bi-disc"></i>
+                                    {% elif 'battery' in service_name %}
+                                        <i class="bi bi-battery-charging"></i>
+                                    {% elif 'brake' in service_name %}
+                                        <i class="bi bi-speedometer2"></i>
+                                    {% else %}
+                                        <i class="bi bi-tools"></i>
+                                    {% endif %}
+                                </div>
 
-<p>
-Vehicle:
-{{ booking.vehicle.brand }}
-{{ booking.vehicle.model }}
-</p>
+                                <span class="booking-status-badge status-{{ status_class }}">
+                                    <span class="status-dot"></span>
+                                    {{ status_text|capitalize }}
+                                </span>
+                            </div>
 
+                            <div class="service-booking-content">
+                                <span class="booking-reference">
+                                    BOOKING #{{ booking.booking_id }}
+                                </span>
 
-<p>
-Date:
-{{ booking.booking_date }}
-</p>
+                                <h3>{{ booking.service_type }}</h3>
 
+                                <div class="booking-detail-row">
+                                    <i class="bi bi-calendar3"></i>
+                                    <div>
+                                        <span class="booking-detail-label">Appointment Date</span>
+                                        <strong>
+                                            {% if booking.booking_date %}
+                                                {{ booking.booking_date.strftime('%d %b %Y') }}
+                                            {% else %}
+                                                Not specified
+                                            {% endif %}
+                                        </strong>
+                                    </div>
+                                </div>
 
-<p>
-Status:
-{{ booking.status }}
-</p>
+                                <div class="booking-detail-row">
+                                    <i class="bi bi-car-front"></i>
+                                    <div>
+                                        <span class="booking-detail-label">Vehicle</span>
+                                        <strong>
+                                            {% if booking.vehicle %}
+                                                {{ booking.vehicle.brand }} {{ booking.vehicle.model }}
+                                                <span class="booking-registration">
+                                                    {{ booking.vehicle.registration_number }}
+                                                </span>
+                                            {% else %}
+                                                Vehicle information unavailable
+                                            {% endif %}
+                                        </strong>
+                                    </div>
+                                </div>
 
+                                {% if booking.description %}
+                                    <div class="booking-description">
+                                        <span class="booking-detail-label">Additional Details</span>
+                                        <p>{{ booking.description }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
 
-<p>
-Description:
-{{ booking.description }}
-</p>
+                            <div class="service-booking-footer">
+                                <span>
+                                    <i class="bi bi-shield-check"></i>
+                                    DriveCare Service Request
+                                </span>
+                                <span class="booking-id-footer">
+                                    #{{ booking.booking_id }}
+                                </span>
+                            </div>
 
+                        </article>
+                    {% endfor %}
+                </div>
 
-<hr>
+            {% else %}
+                <div class="bookings-empty-state">
+                    <div class="bookings-empty-icon">
+                        <i class="bi bi-calendar2-plus"></i>
+                    </div>
+                    <h3>No bookings yet</h3>
+                    <p>Your service appointments will appear here after you book your first service.</p>
 
+                    <a href="{{ url_for('book_service') }}" class="booking-primary-btn">
+                        <i class="bi bi-plus-lg"></i>
+                        Book Your First Service
+                    </a>
+                </div>
+            {% endif %}
+        </div>
 
-{% else %}
+    </div>
+</section>
 
-<p>No bookings found.</p>
+<style>
+    .my-bookings-page {
+        min-height: 80vh;
+        padding: 42px 20px 64px;
+        background: #f5f7fb;
+        font-family: 'Poppins', sans-serif;
+    }
 
+    .bookings-container {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
 
-{% endfor %}
+    .bookings-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 30px;
+    }
 
+    .bookings-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        color: #3268d6;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+    }
 
-</body>
+    .bookings-page-header h1 {
+        margin: 0 0 8px;
+        color: #17233e;
+        font-size: clamp(28px, 4vw, 36px);
+        font-weight: 700;
+        letter-spacing: -1px;
+    }
 
-</html>
+    .bookings-page-header p,
+    .bookings-section-header p {
+        margin: 0;
+        color: #7b879b;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .booking-primary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 13px 19px;
+        border: 0;
+        border-radius: 10px;
+        background: #2864dc;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        box-shadow: 0 6px 15px rgba(40, 100, 220, 0.17);
+        transition: background .2s ease, transform .2s ease;
+    }
+
+    .booking-primary-btn:hover {
+        background: #1e50b5;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    .booking-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 38px;
+    }
+
+    .booking-summary-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 23px;
+        border: 1px solid #e9edf5;
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 5px 18px rgba(24, 39, 75, 0.035);
+    }
+
+    .booking-summary-icon {
+        display: flex;
+        flex: 0 0 49px;
+        width: 49px;
+        height: 49px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        font-size: 21px;
+    }
+
+    .summary-total {
+        background: #eaf1ff;
+        color: #2864dc;
+    }
+
+    .summary-pending {
+        background: #fff4df;
+        color: #c17a13;
+    }
+
+    .summary-completed {
+        background: #e4f8ee;
+        color: #15945a;
+    }
+
+    .booking-summary-card p {
+        margin: 0 0 5px;
+        color: #7b879b;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .booking-summary-card h2 {
+        margin: 0;
+        color: #17233e;
+        font-size: 27px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .bookings-list-section {
+        padding: 28px;
+        border: 1px solid #e9edf5;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 5px 22px rgba(24, 39, 75, 0.035);
+    }
+
+    .bookings-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .bookings-section-header h2 {
+        margin: 0 0 7px;
+        color: #17233e;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .bookings-secondary-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #2864dc;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .bookings-secondary-link:hover {
+        color: #1e50b5;
+    }
+
+    .booking-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .service-booking-card {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid #e7ebf3;
+        border-radius: 15px;
+        background: #fff;
+        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .service-booking-card:hover {
+        transform: translateY(-3px);
+        border-color: #d5e1fa;
+        box-shadow: 0 12px 28px rgba(24, 39, 75, 0.07);
+    }
+
+    .service-booking-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 20px 20px 0;
+    }
+
+    .service-type-icon {
+        display: flex;
+        width: 48px;
+        height: 48px;
+        flex: 0 0 48px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 22px;
+    }
+
+    .booking-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .status-pending {
+        background: #fff4df;
+        color: #ad6b0c;
+    }
+
+    .status-confirmed,
+    .status-approved {
+        background: #eaf1ff;
+        color: #285ec4;
+    }
+
+    .status-completed,
+    .status-done {
+        background: #e4f8ee;
+        color: #168451;
+    }
+
+    .status-cancelled,
+    .status-canceled,
+    .status-rejected {
+        background: #ffebeb;
+        color: #c43b42;
+    }
+
+    .service-booking-content {
+        padding: 19px 20px 22px;
+    }
+
+    .booking-reference {
+        color: #8a96aa;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .service-booking-content h3 {
+        margin: 7px 0 22px;
+        color: #17233e;
+        font-size: 19px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .booking-detail-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: 17px;
+    }
+
+    .booking-detail-row > i {
+        margin-top: 2px;
+        color: #7890ba;
+        font-size: 16px;
+    }
+
+    .booking-detail-row > div {
+        min-width: 0;
+    }
+
+    .booking-detail-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #8a96aa;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .booking-detail-row strong {
+        display: block;
+        color: #35435d;
+        font-size: 12px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .booking-registration {
+        display: block;
+        margin-top: 4px;
+        color: #7b879b;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .booking-description {
+        margin-top: 20px;
+        padding: 13px 14px;
+        border-radius: 10px;
+        background: #f7f9fd;
+    }
+
+    .booking-description p {
+        margin: 0;
+        color: #59677f;
+        font-size: 12px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .service-booking-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px 20px;
+        border-top: 1px solid #edf0f6;
+        background: #fbfcfe;
+    }
+
+    .service-booking-footer > span:first-child {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #7b879b;
+        font-size: 10px;
+        font-weight: 500;
+    }
+
+    .service-booking-footer > span:first-child i {
+        color: #15945a;
+        font-size: 13px;
+    }
+
+    .booking-id-footer {
+        color: #a0a9b8;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .bookings-empty-state {
+        padding: 55px 20px;
+        text-align: center;
+    }
+
+    .bookings-empty-icon {
+        display: flex;
+        width: 76px;
+        height: 76px;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 22px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 32px;
+    }
+
+    .bookings-empty-state h3 {
+        margin: 0 0 10px;
+        color: #17233e;
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+    .bookings-empty-state p {
+        max-width: 420px;
+        margin: 0 auto 23px;
+        color: #7b879b;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 850px) {
+        .booking-cards-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-summary-card {
+            padding: 17px;
+            gap: 12px;
+        }
+
+        .booking-summary-icon {
+            flex-basis: 42px;
+            width: 42px;
+            height: 42px;
+        }
+
+        .booking-summary-card h2 {
+            font-size: 24px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .my-bookings-page {
+            padding: 28px 14px 45px;
+        }
+
+        .bookings-page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .booking-summary-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .booking-summary-card {
+            padding: 17px 20px;
+        }
+
+        .bookings-list-section {
+            padding: 19px 14px;
+            border-radius: 14px;
+        }
+
+        .bookings-section-header {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .service-booking-top {
+            padding: 17px 15px 0;
+        }
+
+        .service-booking-content {
+            padding: 17px 15px 20px;
+        }
+
+        .service-booking-footer {
+            padding: 12px 15px;
+        }
+    }
+</style>
+{% endblock %}

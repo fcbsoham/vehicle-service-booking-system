@@ -1,40 +1,660 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Vehicle</title>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}Add New Vehicle | DriveCare{% endblock %}
 
-<h2>Add Vehicle</h2>
+{% block content %}
 
-<form method="POST">
+<style>
+    .add-vehicle-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 10px 0 40px;
+        color: #172b4d;
+    }
 
-    <label>Brand</label><br>
-    <input type="text" name="brand" required><br><br>
+    .page-heading {
+        margin-bottom: 28px;
+    }
 
+    .page-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+    }
 
-    <label>Model</label><br>
-    <input type="text" name="model" required><br><br>
+    .page-heading h1 {
+        font-size: clamp(28px, 4vw, 36px);
+        font-weight: 700;
+        letter-spacing: -1px;
+        margin-bottom: 10px;
+        color: #172b4d;
+    }
 
+    .page-heading p {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.8;
+        margin: 0;
+        max-width: 620px;
+    }
 
-    <label>Year</label><br>
-    <input type="number" name="year"><br><br>
+    .form-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
+        gap: 25px;
+        align-items: start;
+    }
 
+    .form-card,
+    .information-card {
+        background: #ffffff;
+        border: 1px solid #e5eaf2;
+        border-radius: 17px;
+        overflow: hidden;
+        box-shadow: 0 6px 24px rgba(15, 23, 42, 0.035);
+    }
 
-    <label>Registration Number</label><br>
-    <input type="text" name="registration_number" required><br><br>
+    .form-card-header {
+        padding: 24px 28px;
+        border-bottom: 1px solid #edf1f6;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
 
+    .header-icon {
+        width: 47px;
+        height: 47px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+        flex-shrink: 0;
+    }
 
-    <label>Fuel Type</label><br>
-    <input type="text" name="fuel_type"><br><br>
+    .form-card-header h2 {
+        color: #172b4d;
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 5px;
+    }
 
+    .form-card-header p {
+        color: #64748b;
+        font-size: 12px;
+        margin: 0;
+    }
 
-    <button type="submit">
-        Add Vehicle
-    </button>
+    .vehicle-form {
+        padding: 28px;
+    }
 
-</form>
+    .form-section-title {
+        color: #172b4d;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
 
-</body>
-</html>
+    .form-section-title i {
+        color: #2563eb;
+        font-size: 17px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 21px 18px;
+    }
+
+    .form-field {
+        min-width: 0;
+    }
+
+    .form-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-field label {
+        display: block;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 9px;
+    }
+
+    .required-mark {
+        color: #dc2626;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper > i {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 17px;
+        pointer-events: none;
+    }
+
+    .form-control-custom,
+    .form-select-custom {
+        width: 100%;
+        min-height: 49px;
+        border: 1px solid #dbe3ee;
+        border-radius: 10px;
+        background-color: #ffffff;
+        color: #172b4d;
+        font-size: 13px;
+        padding: 12px 14px 12px 43px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+    }
+
+    .form-select-custom {
+        cursor: pointer;
+        appearance: auto;
+    }
+
+    .form-control-custom::placeholder {
+        color: #a0acbd;
+    }
+
+    .form-control-custom:focus,
+    .form-select-custom:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.09);
+    }
+
+    .field-help {
+        display: block;
+        margin-top: 7px;
+        color: #94a3b8;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .form-divider {
+        height: 1px;
+        background: #edf1f6;
+        margin: 28px 0 23px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 29px;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary-custom,
+    .btn-secondary-custom {
+        min-height: 47px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 12px 19px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary-custom {
+        background: #2563eb;
+        color: white;
+        border: 1px solid #2563eb;
+        flex: 1;
+    }
+
+    .btn-primary-custom:hover {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 7px 16px rgba(37, 99, 235, 0.17);
+    }
+
+    .btn-secondary-custom {
+        background: white;
+        color: #475569;
+        border: 1px solid #dbe3ee;
+    }
+
+    .btn-secondary-custom:hover {
+        background: #f8fafc;
+        color: #172b4d;
+    }
+
+    .information-card {
+        padding: 25px;
+    }
+
+    .preview-illustration {
+        min-height: 150px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #172b4d, #2563eb);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 9px;
+        margin-bottom: 24px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .preview-illustration::before,
+    .preview-illustration::after {
+        content: "";
+        position: absolute;
+        width: 145px;
+        height: 145px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 50%;
+    }
+
+    .preview-illustration::before {
+        top: -85px;
+        right: -25px;
+    }
+
+    .preview-illustration::after {
+        bottom: -100px;
+        left: -30px;
+    }
+
+    .preview-illustration i {
+        font-size: 55px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .preview-illustration span {
+        font-size: 12px;
+        color: #dbeafe;
+        position: relative;
+        z-index: 1;
+    }
+
+    .information-card h3 {
+        color: #172b4d;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 19px;
+    }
+
+    .info-icon {
+        width: 35px;
+        height: 35px;
+        flex-shrink: 0;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+    .info-item h4 {
+        color: #334155;
+        font-size: 12px;
+        font-weight: 700;
+        margin: 2px 0 5px;
+    }
+
+    .info-item p {
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .privacy-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #f8fafc;
+        border: 1px solid #e8edf5;
+        border-radius: 11px;
+        padding: 14px;
+        margin-top: 23px;
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .privacy-note i {
+        color: #059669;
+        font-size: 16px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    @media (max-width: 850px) {
+        .form-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .information-card {
+            order: 2;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .form-card-header,
+        .vehicle-form,
+        .information-card {
+            padding: 20px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .form-field.full-width {
+            grid-column: auto;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-primary-custom,
+        .btn-secondary-custom {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="add-vehicle-page">
+
+<header class="page-heading">
+    <span class="page-eyebrow">
+        <i class="bi bi-car-front-fill"></i>
+        Vehicle Management
+    </span>
+
+    <h1>Add New Vehicle</h1>
+
+    <p>
+        Register your vehicle with DriveCare to keep its details organised
+        and make it easier to book your next service.
+    </p>
+</header>
+
+<div class="form-layout">
+
+    <!-- Vehicle Registration Form -->
+    <section class="form-card">
+
+        <div class="form-card-header">
+            <div class="header-icon">
+                <i class="bi bi-clipboard2-plus"></i>
+            </div>
+
+            <div>
+                <h2>Vehicle Information</h2>
+                <p>Enter the details of your vehicle below.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('add_vehicle') }}" class="vehicle-form">
+
+            <h3 class="form-section-title">
+                <i class="bi bi-info-circle"></i>
+                Basic Details
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-field">
+                    <label for="brand">
+                        Vehicle Brand <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-car-front"></i>
+                        <input
+                            type="text"
+                            id="brand"
+                            name="brand"
+                            class="form-control-custom"
+                            placeholder="e.g. Hyundai"
+                            maxlength="80"
+                            autocomplete="off"
+                            required
+                        >
+                    </div>
+
+                    <small class="field-help">Enter the vehicle manufacturer.</small>
+                </div>
+
+                <div class="form-field">
+                    <label for="model">
+                        Vehicle Model <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-car-front-fill"></i>
+                        <input
+                            type="text"
+                            id="model"
+                            name="model"
+                            class="form-control-custom"
+                            placeholder="e.g. Creta"
+                            maxlength="80"
+                            autocomplete="off"
+                            required
+                        >
+                    </div>
+
+                    <small class="field-help">Enter the model name.</small>
+                </div>
+
+                <div class="form-field">
+                    <label for="year">
+                        Manufacturing Year <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-calendar3"></i>
+                        <input
+                            type="number"
+                            id="year"
+                            name="year"
+                            class="form-control-custom"
+                            placeholder="e.g. 2023"
+                            min="1900"
+                            max="{{ now_year if now_year is defined else 2100 }}"
+                            required
+                        >
+                    </div>
+
+                    <small class="field-help">Enter the vehicle's model year.</small>
+                </div>
+
+                <div class="form-field">
+                    <label for="fuel_type">
+                        Fuel Type <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-fuel-pump"></i>
+                        <select
+                            id="fuel_type"
+                            name="fuel_type"
+                            class="form-select-custom"
+                            required
+                        >
+                            <option value="" selected disabled>Select fuel type</option>
+                            <option value="Petrol">Petrol</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="CNG">CNG</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <small class="field-help">Choose the vehicle's fuel category.</small>
+                </div>
+
+                <div class="form-field full-width">
+                    <label for="registration_number">
+                        Registration Number <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-card-text"></i>
+                        <input
+                            type="text"
+                            id="registration_number"
+                            name="registration_number"
+                            class="form-control-custom"
+                            placeholder="e.g. MH 02 AB 1234"
+                            maxlength="20"
+                            autocomplete="off"
+                            autocapitalize="characters"
+                            required
+                        >
+                    </div>
+
+                    <small class="field-help">
+                        Enter the registration number as shown on your vehicle's number plate.
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="form-divider"></div>
+
+            <h3 class="form-section-title">
+                <i class="bi bi-check2-circle"></i>
+                Review and Register
+            </h3>
+
+            <p style="color:#64748b; font-size:12px; line-height:1.8; margin:0;">
+                Check that the information is correct before registering your vehicle.
+            </p>
+
+            <div class="form-actions">
+
+                <button type="submit" class="btn-primary-custom">
+                    <i class="bi bi-plus-circle"></i>
+                    Register Vehicle
+                </button>
+
+                <a href="{{ url_for('my_vehicles') }}" class="btn-secondary-custom">
+                    <i class="bi bi-arrow-left"></i>
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </section>
+
+    <!-- Information Panel -->
+    <aside class="information-card">
+
+        <div class="preview-illustration">
+            <i class="bi bi-car-front-fill"></i>
+            <span>Your vehicle, managed with DriveCare</span>
+        </div>
+
+        <h3>Before You Register</h3>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="bi bi-card-text"></i>
+            </div>
+
+            <div>
+                <h4>Check the Registration</h4>
+                <p>Enter the correct number plate details to help identify your vehicle.</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+
+            <div>
+                <h4>Confirm the Model Year</h4>
+                <p>Use the vehicle's manufacturing or model year as appropriate for your records.</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="bi bi-fuel-pump"></i>
+            </div>
+
+            <div>
+                <h4>Select the Right Fuel Type</h4>
+                <p>Choose the category that matches your vehicle.</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="bi bi-tools"></i>
+            </div>
+
+            <div>
+                <h4>Ready for Servicing</h4>
+                <p>After registration, you can find the vehicle under My Vehicles and use it when booking a service.</p>
+            </div>
+        </div>
+
+        <div class="privacy-note">
+            <i class="bi bi-shield-check"></i>
+            <div>
+                <strong>Your information matters.</strong>
+                Only register vehicle details that you are authorised to manage.
+            </div>
+        </div>
+
+    </aside>
+
+</div>
+
+</div>
+
+{% endblock %}

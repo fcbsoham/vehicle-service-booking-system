@@ -1,23 +1,898 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
+
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login | DriveCare</title>
+
+<meta name="description"
+      content="Sign in to DriveCare to manage your vehicles and service bookings.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet">
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --navy: #101b35;
+        --text: #243047;
+        --muted: #788397;
+        --border: #e3e8f0;
+        --background: #f4f7fc;
+        --white: #ffffff;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background:
+            radial-gradient(ellipse at 10% 10%,
+                rgba(37, 99, 235, 0.07), transparent 35%),
+            var(--background);
+        color: var(--text);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .login-shell {
+        width: 100%;
+        max-width: 1050px;
+        min-height: 620px;
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        overflow: hidden;
+        background: var(--white);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: 25px;
+        box-shadow: 0 25px 80px rgba(24, 43, 82, 0.10);
+    }
+
+    /* Brand panel */
+
+    .brand-panel {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 39px;
+        background: linear-gradient(145deg, #142342, #204a96);
+        color: white;
+    }
+
+    .brand-panel::before {
+        content: "";
+        position: absolute;
+        width: 370px;
+        height: 370px;
+        top: 170px;
+        left: -160px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 50%;
+        box-shadow:
+            0 0 0 40px rgba(255, 255, 255, 0.025),
+            0 0 0 80px rgba(255, 255, 255, 0.025);
+    }
+
+    .brand-panel::after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        right: -120px;
+        bottom: -70px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.055);
+    }
+
+    .brand-content,
+    .brand-footer {
+        position: relative;
+        z-index: 1;
+    }
+
+    .brand-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        color: white;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.7px;
+    }
+
+    .brand-logo:hover {
+        color: white;
+    }
+
+    .brand-logo-icon {
+        width: 45px;
+        height: 45px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.19);
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.13);
+        font-size: 25px;
+    }
+
+    .brand-logo span span {
+        color: #93b9ff;
+    }
+
+    .brand-message {
+        margin-top: 83px;
+    }
+
+    .brand-eyebrow {
+        display: inline-block;
+        padding: 8px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.17);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #d8e5ff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.3px;
+    }
+
+    .brand-message h1 {
+        margin: 23px 0 17px;
+        color: white;
+        font-size: clamp(31px, 3vw, 42px);
+        font-weight: 800;
+        line-height: 1.25;
+        letter-spacing: -1.5px;
+    }
+
+    .brand-message h1 span {
+        color: #9dc0ff;
+    }
+
+    .brand-message p {
+        max-width: 330px;
+        margin: 0;
+        color: #d0daed;
+        font-size: 13px;
+        line-height: 2;
+    }
+
+    .brand-illustration {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 150px;
+        margin: 22px 0 14px;
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 125px;
+        line-height: 1;
+        text-shadow: 0 15px 40px rgba(0, 0, 0, 0.16);
+    }
+
+    .brand-feature {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-top: 23px;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .brand-feature-icon {
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.11);
+        color: #b7d0ff;
+        font-size: 20px;
+    }
+
+    .brand-feature strong {
+        display: block;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .brand-feature span {
+        display: block;
+        margin-top: 4px;
+        color: #c8d5eb;
+        font-size: 10px;
+    }
+
+    /* Form panel */
+
+    .form-panel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 58px;
+    }
+
+    .login-form-wrapper {
+        width: 100%;
+        max-width: 365px;
+    }
+
+    .mobile-logo {
+        display: none;
+    }
+
+    .form-heading {
+        margin-bottom: 32px;
+    }
+
+    .form-heading .welcome-label {
+        color: var(--primary);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+    }
+
+    .form-heading h2 {
+        margin: 12px 0 9px;
+        color: var(--navy);
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .form-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    /* Flash messages */
+
+    .flash-messages {
+        margin-bottom: 22px;
+    }
+
+    .flash-message {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 12px 14px;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        background: #fff1f2;
+        color: #b42332;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .flash-message i {
+        margin-top: 2px;
+        font-size: 15px;
+    }
+
+    /* Input fields */
+
+    .form-group {
+        margin-bottom: 21px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 9px;
+        color: #29364d;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: #8995a8;
+        font-size: 17px;
+        pointer-events: none;
+        transition: color 0.2s ease;
+    }
+
+    .form-control {
+        width: 100%;
+        height: 51px;
+        padding: 0 46px 0 44px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        outline: none;
+        background: #fbfcfe;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 12px;
+        transition: border-color 0.2s ease,
+                    box-shadow 0.2s ease,
+                    background 0.2s ease;
+    }
+
+    .form-control::placeholder {
+        color: #a2aaba;
+    }
+
+    .form-control:hover {
+        border-color: #c8d4e6;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.09);
+    }
+
+    .input-wrapper:focus-within .input-icon {
+        color: var(--primary);
+    }
+
+    .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 13px;
+        transform: translateY(-50%);
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 30px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: #8995a8;
+        font-size: 17px;
+        cursor: pointer;
+    }
+
+    .password-toggle:hover {
+        color: var(--primary);
+    }
+
+    .password-toggle:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+        border-radius: 5px;
+    }
+
+    .form-options {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: -1px 0 25px;
+    }
+
+    .secure-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 10px;
+    }
+
+    .secure-note i {
+        color: #16a36a;
+        font-size: 13px;
+    }
+
+    .login-button {
+        width: 100%;
+        min-height: 51px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 13px 20px;
+        border: none;
+        border-radius: 11px;
+        background: var(--primary);
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.20);
+        color: white;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease,
+                    transform 0.2s ease,
+                    box-shadow 0.2s ease;
+    }
+
+    .login-button:hover {
+        transform: translateY(-2px);
+        background: var(--primary-dark);
+        box-shadow: 0 11px 23px rgba(37, 99, 235, 0.27);
+    }
+
+    .login-button:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.35);
+        outline-offset: 3px;
+    }
+
+    .login-button:disabled {
+        cursor: wait;
+        opacity: 0.8;
+        transform: none;
+    }
+
+    .form-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 25px 0;
+        color: #a0a9b8;
+        font-size: 10px;
+    }
+
+    .form-divider::before,
+    .form-divider::after {
+        content: "";
+        height: 1px;
+        flex: 1;
+        background: var(--border);
+    }
+
+    .register-prompt {
+        margin: 0;
+        color: var(--muted);
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .register-prompt a {
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    .register-prompt a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .back-home {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 29px;
+        color: var(--muted);
+        font-size: 11px;
+        transition: color 0.2s ease;
+    }
+
+    .back-home:hover {
+        color: var(--primary);
+    }
+
+    .page-footer {
+        margin-top: 23px;
+        color: #909aab;
+        text-align: center;
+        font-size: 10px;
+    }
+
+    /* Responsive layout */
+
+    @media (max-width: 850px) {
+        body {
+            padding: 18px;
+        }
+
+        .login-shell {
+            max-width: 610px;
+            min-height: auto;
+            grid-template-columns: 1fr;
+        }
+
+        .brand-panel {
+            min-height: 235px;
+            padding: 27px 32px;
+        }
+
+        .brand-message {
+            margin-top: 30px;
+        }
+
+        .brand-message h1 {
+            margin: 13px 0 8px;
+            font-size: 30px;
+        }
+
+        .brand-message p {
+            max-width: 440px;
+            font-size: 12px;
+        }
+
+        .brand-illustration {
+            position: absolute;
+            right: 22px;
+            bottom: 0;
+            min-height: auto;
+            margin: 0;
+            font-size: 95px;
+            opacity: 0.17;
+        }
+
+        .brand-feature {
+            display: none;
+        }
+
+        .form-panel {
+            padding: 40px 32px;
+        }
+
+        .login-form-wrapper {
+            max-width: 430px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body {
+            justify-content: flex-start;
+            padding: 12px;
+        }
+
+        .login-shell {
+            border-radius: 18px;
+        }
+
+        .brand-panel {
+            min-height: 210px;
+            padding: 23px;
+        }
+
+        .brand-logo {
+            font-size: 21px;
+        }
+
+        .brand-logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .brand-message {
+            margin-top: 25px;
+        }
+
+        .brand-message h1 {
+            font-size: 27px;
+        }
+
+        .brand-message p {
+            max-width: 290px;
+            font-size: 11px;
+        }
+
+        .brand-illustration {
+            right: 12px;
+            bottom: 5px;
+            font-size: 75px;
+        }
+
+        .form-panel {
+            padding: 32px 23px;
+        }
+
+        .form-heading {
+            margin-bottom: 27px;
+        }
+
+        .form-heading h2 {
+            font-size: 29px;
+        }
+
+        .form-options {
+            align-items: flex-start;
+        }
+
+        .page-footer {
+            margin: 16px 0 5px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+
 </head>
+
 <body>
 
-<h2>Login</h2>
+<main class="login-shell">
 
-<form method="POST">
+    <!-- Left branding panel -->
+    <section class="brand-panel">
 
-    <label>Email</label><br>
-    <input type="email" name="email" required><br><br>
+        <div class="brand-content">
 
-    <label>Password</label><br>
-    <input type="password" name="password" required><br><br>
+            <a href="{{ url_for('home') }}" class="brand-logo">
+                <span class="brand-logo-icon">
+                    <i class="bi bi-car-front-fill"></i>
+                </span>
 
-    <button type="submit">Login</button>
+                <span>Drive<span>Care</span></span>
+            </a>
 
-</form>
+            <div class="brand-message">
+
+                <span class="brand-eyebrow">
+                    YOUR VEHICLE, YOUR CONTROL
+                </span>
+
+                <h1>
+                    Welcome back to
+                    <span>better vehicle care.</span>
+                </h1>
+
+                <p>
+                    Sign in to manage your vehicles, organize your service
+                    bookings, and keep track of your maintenance requests.
+                </p>
+
+            </div>
+
+            <div class="brand-illustration" aria-hidden="true">
+                <i class="bi bi-car-front-fill"></i>
+            </div>
+
+        </div>
+
+
+        <div class="brand-footer">
+
+            <div class="brand-feature">
+
+                <div class="brand-feature-icon">
+                    <i class="bi bi-calendar2-check"></i>
+                </div>
+
+                <div>
+                    <strong>Your services, organized.</strong>
+                    <span>Manage your bookings from one place.</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Login form panel -->
+    <section class="form-panel">
+
+        <div class="login-form-wrapper">
+
+            <div class="form-heading">
+
+                <span class="welcome-label">
+                    ACCOUNT ACCESS
+                </span>
+
+                <h2>Sign in</h2>
+
+                <p>
+                    Enter your account details to continue to DriveCare.
+                </p>
+
+            </div>
+
+
+            <!-- Flask flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+
+                    <div class="flash-messages" role="status" aria-live="polite">
+
+                        {% for category, message in messages %}
+
+                            <div class="flash-message">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ message }}</span>
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+            {% endwith %}
+
+
+            <!-- Keep the original POST method and field names -->
+            <form method="POST" id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="email" class="form-label">
+                        Email Address
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i class="bi bi-envelope input-icon"></i>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password" class="form-label">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i class="bi bi-lock input-icon"></i>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="togglePassword"
+                            aria-label="Show password"
+                            aria-pressed="false"
+                        >
+                            <i class="bi bi-eye" id="passwordIcon"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-options">
+
+                    <span class="secure-note">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        Secure account sign-in
+                    </span>
+
+                </div>
+
+
+                <button type="submit" class="login-button" id="loginButton">
+
+                    <span id="buttonText">Sign In to DriveCare</span>
+
+                    <i class="bi bi-arrow-right" id="buttonIcon"></i>
+
+                </button>
+
+            </form>
+
+
+            <div class="form-divider">
+                NEW TO DRIVECARE?
+            </div>
+
+
+            <p class="register-prompt">
+                Don't have an account?
+                <a href="{{ url_for('register') }}">Create an account</a>
+            </p>
+
+
+            <div style="text-align: center;">
+                <a href="{{ url_for('home') }}" class="back-home">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Home
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="page-footer">
+    &copy; 2026 DriveCare. All rights reserved.
+</footer>
+
+
+<script>
+    // Show or hide the password.
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordIcon = document.getElementById("passwordIcon");
+
+    togglePassword.addEventListener("click", function () {
+        const showingPassword = passwordInput.type === "password";
+
+        passwordInput.type = showingPassword ? "text" : "password";
+
+        passwordIcon.className = showingPassword
+            ? "bi bi-eye-slash"
+            : "bi bi-eye";
+
+        togglePassword.setAttribute(
+            "aria-label",
+            showingPassword ? "Hide password" : "Show password"
+        );
+
+        togglePassword.setAttribute(
+            "aria-pressed",
+            showingPassword ? "true" : "false"
+        );
+    });
+
+    // Prevent accidental repeated submissions while the form is sending.
+    // Flask still performs the actual authentication.
+    const loginForm = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
+    const buttonText = document.getElementById("buttonText");
+    const buttonIcon = document.getElementById("buttonIcon");
+
+    loginForm.addEventListener("submit", function () {
+        if (!loginForm.checkValidity()) {
+            return;
+        }
+
+        loginButton.disabled = true;
+        buttonText.textContent = "Signing in...";
+        buttonIcon.className = "bi bi-arrow-repeat";
+    });
+</script>
 
 </body>
 </html>

@@ -1,21 +1,1142 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
+
 <head>
-    <title>DriveCare</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DriveCare | Vehicle Service Booking</title>
+
+<meta name="description"
+      content="DriveCare makes it easy to manage your vehicles and book vehicle maintenance services.">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet">
+
+<!-- Existing project stylesheet -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+    :root {
+        --dc-primary: #2563eb;
+        --dc-primary-dark: #1d4ed8;
+        --dc-navy: #101b35;
+        --dc-text: #243047;
+        --dc-muted: #697586;
+        --dc-background: #f5f7fb;
+        --dc-white: #ffffff;
+        --dc-border: #e7ebf2;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: var(--dc-background);
+        color: var(--dc-text);
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .dc-container {
+        width: min(1160px, calc(100% - 48px));
+        margin: 0 auto;
+    }
+
+    /* Navigation */
+
+    .dc-navbar {
+        background: rgba(255, 255, 255, 0.96);
+        border-bottom: 1px solid var(--dc-border);
+        position: relative;
+        z-index: 10;
+    }
+
+    .dc-nav-inner {
+        min-height: 78px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+    }
+
+    .dc-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        color: var(--dc-navy);
+        font-size: 23px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+    }
+
+    .dc-brand-icon {
+        width: 43px;
+        height: 43px;
+        display: grid;
+        place-items: center;
+        color: white;
+        background: var(--dc-primary);
+        border-radius: 13px;
+        font-size: 24px;
+    }
+
+    .dc-brand span span {
+        color: var(--dc-primary);
+    }
+
+    .dc-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .dc-nav-link {
+        padding: 11px 18px;
+        border-radius: 10px;
+        color: var(--dc-text);
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .dc-nav-link:hover {
+        color: var(--dc-primary);
+        background: #eff4ff;
+    }
+
+    .dc-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 13px 21px;
+        border-radius: 11px;
+        border: 1px solid transparent;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        transition: transform 0.2s ease,
+                    background 0.2s ease,
+                    box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+
+    .dc-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .dc-btn-primary {
+        background: var(--dc-primary);
+        color: white;
+        box-shadow: 0 7px 18px rgba(37, 99, 235, 0.19);
+    }
+
+    .dc-btn-primary:hover {
+        background: var(--dc-primary-dark);
+        color: white;
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25);
+    }
+
+    .dc-btn-outline {
+        color: var(--dc-text);
+        background: white;
+        border-color: var(--dc-border);
+    }
+
+    .dc-btn-outline:hover {
+        border-color: var(--dc-primary);
+        color: var(--dc-primary);
+    }
+
+    /* Hero */
+
+    .dc-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 90px 0 84px;
+        background:
+            radial-gradient(ellipse at 88% 15%,
+                rgba(70, 116, 230, 0.12), transparent 32%),
+            linear-gradient(135deg, #ffffff 0%, #f1f5ff 100%);
+    }
+
+    .dc-hero-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        align-items: center;
+        gap: 60px;
+    }
+
+    .dc-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 14px;
+        background: #e9f0ff;
+        border: 1px solid #dce7ff;
+        border-radius: 30px;
+        color: var(--dc-primary-dark);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .dc-eyebrow i {
+        font-size: 15px;
+    }
+
+    .dc-hero h1 {
+        max-width: 610px;
+        margin: 23px 0 20px;
+        color: var(--dc-navy);
+        font-size: clamp(37px, 4.6vw, 59px);
+        font-weight: 800;
+        line-height: 1.17;
+        letter-spacing: -2.5px;
+    }
+
+    .dc-hero h1 span {
+        color: var(--dc-primary);
+    }
+
+    .dc-hero-description {
+        max-width: 520px;
+        margin: 0 0 30px;
+        color: var(--dc-muted);
+        font-size: 15px;
+        line-height: 1.95;
+    }
+
+    .dc-hero-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 13px;
+    }
+
+    .dc-hero-buttons .dc-btn {
+        min-height: 49px;
+    }
+
+    .dc-hero-note {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-top: 27px;
+        color: var(--dc-muted);
+        font-size: 12px;
+    }
+
+    .dc-hero-note i {
+        color: #16a36a;
+        font-size: 17px;
+    }
+
+    /* Hero illustration */
+
+    .dc-visual {
+        position: relative;
+        min-height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dc-visual-circle {
+        position: absolute;
+        width: 330px;
+        height: 330px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #dce8ff, #edf3ff);
+    }
+
+    .dc-car-card {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 390px;
+        padding: 36px 25px 28px;
+        background: rgba(255, 255, 255, 0.91);
+        border: 1px solid rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        box-shadow: 0 24px 65px rgba(31, 57, 110, 0.13);
+        text-align: center;
+    }
+
+    .dc-car-illustration {
+        min-height: 180px;
+        display: grid;
+        place-items: center;
+        color: var(--dc-primary);
+        font-size: 145px;
+        line-height: 1;
+    }
+
+    .dc-car-card h3 {
+        margin: 19px 0 8px;
+        color: var(--dc-navy);
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .dc-car-card p {
+        margin: 0;
+        color: var(--dc-muted);
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .dc-floating-card {
+        position: absolute;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px 17px;
+        background: white;
+        border: 1px solid #edf0f5;
+        border-radius: 15px;
+        box-shadow: 0 12px 35px rgba(31, 57, 110, 0.11);
+    }
+
+    .dc-floating-card i {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    .dc-floating-card strong {
+        display: block;
+        color: var(--dc-navy);
+        font-size: 12px;
+    }
+
+    .dc-floating-card small {
+        display: block;
+        margin-top: 4px;
+        color: var(--dc-muted);
+        font-size: 10px;
+    }
+
+    .dc-floating-top {
+        top: 30px;
+        right: -4px;
+    }
+
+    .dc-floating-top i {
+        color: #16865d;
+        background: #e3f8ee;
+    }
+
+    .dc-floating-bottom {
+        bottom: 23px;
+        left: -13px;
+    }
+
+    .dc-floating-bottom i {
+        color: #c77c11;
+        background: #fff1d7;
+    }
+
+    /* Trust strip */
+
+    .dc-trust {
+        background: white;
+        border-top: 1px solid var(--dc-border);
+        border-bottom: 1px solid var(--dc-border);
+    }
+
+    .dc-trust-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 25px 0;
+    }
+
+    .dc-trust-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        padding: 8px 18px;
+        border-right: 1px solid var(--dc-border);
+    }
+
+    .dc-trust-item:last-child {
+        border-right: none;
+    }
+
+    .dc-trust-item i {
+        color: var(--dc-primary);
+        font-size: 25px;
+    }
+
+    .dc-trust-item strong {
+        display: block;
+        color: var(--dc-navy);
+        font-size: 13px;
+    }
+
+    .dc-trust-item span {
+        display: block;
+        margin-top: 3px;
+        color: var(--dc-muted);
+        font-size: 11px;
+    }
+
+    /* Services */
+
+    .dc-services {
+        padding: 88px 0;
+    }
+
+    .dc-section-heading {
+        max-width: 640px;
+        margin: 0 auto 42px;
+        text-align: center;
+    }
+
+    .dc-section-label {
+        color: var(--dc-primary);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+    }
+
+    .dc-section-heading h2 {
+        margin: 12px 0;
+        color: var(--dc-navy);
+        font-size: clamp(27px, 3vw, 36px);
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .dc-section-heading p {
+        margin: 0;
+        color: var(--dc-muted);
+        font-size: 14px;
+        line-height: 1.9;
+    }
+
+    .dc-service-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 23px;
+    }
+
+    .dc-service-card {
+        padding: 30px 27px;
+        background: white;
+        border: 1px solid var(--dc-border);
+        border-radius: 19px;
+        transition: transform 0.25s ease,
+                    box-shadow 0.25s ease,
+                    border-color 0.25s ease;
+    }
+
+    .dc-service-card:hover {
+        transform: translateY(-6px);
+        border-color: #cbdafe;
+        box-shadow: 0 18px 38px rgba(24, 50, 100, 0.08);
+    }
+
+    .dc-service-icon {
+        width: 57px;
+        height: 57px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 22px;
+        border-radius: 16px;
+        font-size: 26px;
+    }
+
+    .dc-icon-blue {
+        color: #2563eb;
+        background: #eaf0ff;
+    }
+
+    .dc-icon-green {
+        color: #11865b;
+        background: #e5f8ef;
+    }
+
+    .dc-icon-orange {
+        color: #c17b17;
+        background: #fff2dc;
+    }
+
+    .dc-service-card h3 {
+        margin: 0 0 11px;
+        color: var(--dc-navy);
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .dc-service-card p {
+        min-height: 70px;
+        margin: 0 0 18px;
+        color: var(--dc-muted);
+        font-size: 13px;
+        line-height: 1.9;
+    }
+
+    .dc-service-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--dc-primary);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .dc-service-link i {
+        transition: transform 0.2s ease;
+    }
+
+    .dc-service-card:hover .dc-service-link i {
+        transform: translateX(4px);
+    }
+
+    /* Call to action */
+
+    .dc-cta {
+        padding: 0 0 82px;
+    }
+
+    .dc-cta-panel {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+        padding: 43px 48px;
+        background: linear-gradient(120deg, #17284c, #244d9b);
+        border-radius: 23px;
+    }
+
+    .dc-cta-panel::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        top: -140px;
+        right: 160px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 50%;
+        box-shadow: 0 0 0 35px rgba(255, 255, 255, 0.025),
+                    0 0 0 70px rgba(255, 255, 255, 0.025);
+    }
+
+    .dc-cta-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .dc-cta-panel h2 {
+        margin: 0 0 10px;
+        color: white;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 700;
+    }
+
+    .dc-cta-panel p {
+        max-width: 540px;
+        margin: 0;
+        color: #d5def0;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .dc-cta-panel .dc-btn {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+        background: white;
+        color: var(--dc-primary-dark);
+    }
+
+    .dc-cta-panel .dc-btn:hover {
+        background: #edf3ff;
+    }
+
+    /* Footer */
+
+    .dc-footer {
+        padding: 27px 0;
+        background: white;
+        border-top: 1px solid var(--dc-border);
+    }
+
+    .dc-footer-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+    }
+
+    .dc-footer-brand {
+        color: var(--dc-navy);
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .dc-footer-brand span {
+        color: var(--dc-primary);
+    }
+
+    .dc-footer p {
+        margin: 5px 0 0;
+        color: var(--dc-muted);
+        font-size: 11px;
+    }
+
+    .dc-footer-links {
+        display: flex;
+        gap: 20px;
+    }
+
+    .dc-footer-links a {
+        color: var(--dc-muted);
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .dc-footer-links a:hover {
+        color: var(--dc-primary);
+    }
+
+    /* Responsive design */
+
+    @media (max-width: 900px) {
+        .dc-hero {
+            padding: 65px 0;
+        }
+
+        .dc-hero-grid {
+            grid-template-columns: 1fr 0.85fr;
+            gap: 28px;
+        }
+
+        .dc-visual-circle {
+            width: 260px;
+            height: 260px;
+        }
+
+        .dc-car-illustration {
+            min-height: 145px;
+            font-size: 110px;
+        }
+
+        .dc-car-card {
+            padding: 27px 18px 23px;
+        }
+
+        .dc-floating-top {
+            right: -4px;
+        }
+
+        .dc-floating-bottom {
+            left: -4px;
+        }
+
+        .dc-service-grid {
+            gap: 15px;
+        }
+
+        .dc-service-card {
+            padding: 25px 20px;
+        }
+    }
+
+    @media (max-width: 680px) {
+        .dc-container {
+            width: min(100% - 32px, 520px);
+        }
+
+        .dc-nav-inner {
+            min-height: 70px;
+        }
+
+        .dc-brand {
+            font-size: 20px;
+        }
+
+        .dc-brand-icon {
+            width: 39px;
+            height: 39px;
+        }
+
+        .dc-nav-actions {
+            gap: 4px;
+        }
+
+        .dc-nav-link {
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .dc-nav-actions .dc-btn {
+            padding: 10px 13px;
+            font-size: 12px;
+        }
+
+        .dc-hero {
+            padding: 55px 0 43px;
+        }
+
+        .dc-hero-grid {
+            grid-template-columns: 1fr;
+            gap: 28px;
+        }
+
+        .dc-hero h1 {
+            margin-top: 19px;
+            font-size: clamp(36px, 9vw, 49px);
+            letter-spacing: -1.8px;
+        }
+
+        .dc-hero-description {
+            font-size: 13px;
+        }
+
+        .dc-visual {
+            min-height: 330px;
+        }
+
+        .dc-visual-circle {
+            width: 270px;
+            height: 270px;
+        }
+
+        .dc-car-card {
+            max-width: 330px;
+        }
+
+        .dc-floating-top {
+            top: 4px;
+            right: 0;
+        }
+
+        .dc-floating-bottom {
+            bottom: 3px;
+            left: 0;
+        }
+
+        .dc-trust-grid {
+            grid-template-columns: 1fr;
+            padding: 12px 0;
+        }
+
+        .dc-trust-item {
+            justify-content: flex-start;
+            padding: 15px 8px;
+            border-right: none;
+            border-bottom: 1px solid var(--dc-border);
+        }
+
+        .dc-trust-item:last-child {
+            border-bottom: none;
+        }
+
+        .dc-services {
+            padding: 65px 0;
+        }
+
+        .dc-section-heading {
+            margin-bottom: 30px;
+        }
+
+        .dc-service-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .dc-service-card p {
+            min-height: auto;
+        }
+
+        .dc-cta {
+            padding-bottom: 55px;
+        }
+
+        .dc-cta-panel {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 32px 24px;
+        }
+
+        .dc-footer-inner {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .dc-footer-links {
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+
 </head>
+
 <body>
 
-    <h1>DriveCare</h1>
+<!-- Navigation -->
+<header class="dc-navbar">
+    <div class="dc-container dc-nav-inner">
 
-    <p>Welcome to the Vehicle Service Booking System</p>
+        <a href="{{ url_for('home') }}" class="dc-brand">
+            <span class="dc-brand-icon">
+                <i class="bi bi-car-front-fill"></i>
+            </span>
 
-    <a href="/register">
-        <button>Register</button>
-    </a>
+            <span>Drive<span>Care</span></span>
+        </a>
 
-    <a href="/login">
-        <button>Login</button>
-    </a>
+        <nav class="dc-nav-actions" aria-label="Main navigation">
+            {% if current_user.is_authenticated %} <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+Go to Dashboard </a> <a href="{{ url_for('logout') }}" class="btn btn-outline-primary">
+Logout </a>
+{% else %} <a href="{{ url_for('login') }}" class="btn btn-primary">
+Login </a> <a href="{{ url_for('register') }}" class="btn btn-outline-primary">
+Get Started </a>
+{% endif %}
+        </nav>
+
+    </div>
+</header>
+
+
+<!-- Hero Section -->
+<main>
+
+    <section class="dc-hero">
+        <div class="dc-container dc-hero-grid">
+
+            <div class="dc-hero-content">
+
+                <div class="dc-eyebrow">
+                    <i class="bi bi-stars"></i>
+                    YOUR VEHICLE, OUR PRIORITY
+                </div>
+
+                <h1>
+                    Vehicle care,
+                    <span>made simple.</span>
+                </h1>
+
+                <p class="dc-hero-description">
+                    Take control of your vehicle maintenance with DriveCare.
+                    Register your vehicles, book service appointments, and
+                    manage your booking history through one convenient platform.
+                </p>
+
+                <div class="dc-hero-buttons">
+
+                    <a href="{{ url_for('register') }}"
+                       class="dc-btn dc-btn-primary">
+                        Get Started
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+
+                    <a href="{{ url_for('login') }}"
+                       class="dc-btn dc-btn-outline">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Sign In
+                    </a>
+
+                </div>
+
+                <div class="dc-hero-note">
+                    <i class="bi bi-check-circle-fill"></i>
+                    One place to organize your vehicle service bookings.
+                </div>
+
+            </div>
+
+
+            <!-- CSS and icon-based vehicle illustration -->
+            <div class="dc-visual">
+
+                <div class="dc-visual-circle"></div>
+
+                <div class="dc-car-card">
+
+                    <div class="dc-car-illustration">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
+
+                    <h3>Your Vehicle. Your Schedule.</h3>
+
+                    <p>
+                        Keep your vehicles and maintenance requests
+                        organized in one place.
+                    </p>
+
+                </div>
+
+                <div class="dc-floating-card dc-floating-top">
+
+                    <i class="bi bi-calendar2-check"></i>
+
+                    <div>
+                        <strong>Easy Booking</strong>
+                        <small>Manage service appointments</small>
+                    </div>
+
+                </div>
+
+                <div class="dc-floating-card dc-floating-bottom">
+
+                    <i class="bi bi-clipboard2-check"></i>
+
+                    <div>
+                        <strong>Service History</strong>
+                        <small>Track your booking status</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Platform Benefits -->
+    <section class="dc-trust">
+        <div class="dc-container dc-trust-grid">
+
+            <div class="dc-trust-item">
+                <i class="bi bi-car-front"></i>
+
+                <div>
+                    <strong>Vehicle Management</strong>
+                    <span>Keep vehicle details organized</span>
+                </div>
+            </div>
+
+            <div class="dc-trust-item">
+                <i class="bi bi-calendar2-week"></i>
+
+                <div>
+                    <strong>Service Scheduling</strong>
+                    <span>Submit service booking requests</span>
+                </div>
+            </div>
+
+            <div class="dc-trust-item">
+                <i class="bi bi-clipboard-check"></i>
+
+                <div>
+                    <strong>Booking History</strong>
+                    <span>Review your service requests</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Services Section -->
+    <section class="dc-services" id="services">
+
+        <div class="dc-container">
+
+            <div class="dc-section-heading">
+
+                <span class="dc-section-label">
+                    WHAT YOU CAN DO
+                </span>
+
+                <h2>Everything your vehicle needs, organized.</h2>
+
+                <p>
+                    Simplify the way you manage your vehicles and
+                    service bookings with easy-to-use tools.
+                </p>
+
+            </div>
+
+
+            <div class="dc-service-grid">
+
+                <!-- Vehicle Management -->
+                <article class="dc-service-card">
+
+                    <div class="dc-service-icon dc-icon-blue">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
+
+                    <h3>Manage Your Vehicles</h3>
+
+                    <p>
+                        Register your vehicles and keep important details,
+                        including registration numbers and vehicle models,
+                        organized in your account.
+                    </p>
+
+                    <a href="{{ url_for('register') }}"
+                       class="dc-service-link">
+                        Get started
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+
+                </article>
+
+
+                <!-- Service Booking -->
+                <article class="dc-service-card">
+
+                    <div class="dc-service-icon dc-icon-green">
+                        <i class="bi bi-tools"></i>
+                    </div>
+
+                    <h3>Book a Service</h3>
+
+                    <p>
+                        Submit vehicle maintenance and repair requests
+                        by selecting your vehicle, service type,
+                        and preferred booking date.
+                    </p>
+
+                    <a href="{{ url_for('register') }}"
+                       class="dc-service-link">
+                        Book your service
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+
+                </article>
+
+
+                <!-- Booking Tracking -->
+                <article class="dc-service-card">
+
+                    <div class="dc-service-icon dc-icon-orange">
+                        <i class="bi bi-journal-check"></i>
+                    </div>
+
+                    <h3>Track Your Bookings</h3>
+
+                    <p>
+                        Access your booking history and review
+                        the current status of your service requests
+                        after signing in.
+                    </p>
+
+                    <a href="{{ url_for('login') }}"
+                       class="dc-service-link">
+                        View your account
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+
+                </article>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Call to Action -->
+    <section class="dc-cta">
+        <div class="dc-container">
+
+            <div class="dc-cta-panel">
+
+                <div class="dc-cta-content">
+
+                    <h2>Ready to simplify vehicle maintenance?</h2>
+
+                    <p>
+                        Create your DriveCare account to register your
+                        vehicles and start managing your service bookings.
+                    </p>
+
+                </div>
+
+                <a href="{{ url_for('register') }}"
+                   class="dc-btn">
+                    Create Your Account
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+
+<!-- Footer -->
+<footer class="dc-footer">
+
+    <div class="dc-container dc-footer-inner">
+
+        <div>
+            <div class="dc-footer-brand">
+                Drive<span>Care</span>
+            </div>
+
+            <p>
+                A simpler way to manage vehicle service bookings.
+            </p>
+        </div>
+
+        <div class="dc-footer-links">
+
+            <a href="{{ url_for('home') }}">Home</a>
+
+            <a href="#services">Services</a>
+
+            <a href="{{ url_for('login') }}">Login</a>
+
+            <a href="{{ url_for('register') }}">Register</a>
+
+        </div>
+
+        <p>
+            &copy; 2026 DriveCare. All rights reserved.
+        </p>
+
+    </div>
+
+</footer>
 
 </body>
 </html>

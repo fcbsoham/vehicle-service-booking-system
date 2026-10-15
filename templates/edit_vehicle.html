@@ -1,37 +1,652 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Vehicle</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Edit Vehicle</h2>
+{% block title %}Edit Vehicle | DriveCare{% endblock %}
 
-<form method="POST">
+{% block content %}
 
-    <label>Brand</label><br>
-    <input type="text" name="brand" value="{{ vehicle.brand }}" required><br><br>
+<style>
+    .edit-vehicle-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 10px 0 40px;
+        color: #172b4d;
+    }
 
-    <label>Model</label><br>
-    <input type="text" name="model" value="{{ vehicle.model }}" required><br><br>
+    .page-heading {
+        margin-bottom: 28px;
+    }
 
-    <label>Year</label><br>
-    <input type="number" name="year" value="{{ vehicle.year }}"><br><br>
+    .page-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+    }
 
-    <label>Registration Number</label><br>
-    <input type="text"
-           name="registration_number"
-           value="{{ vehicle.registration_number }}"
-           required><br><br>
+    .page-heading h1 {
+        font-size: clamp(28px, 4vw, 36px);
+        font-weight: 700;
+        letter-spacing: -1px;
+        margin-bottom: 10px;
+        color: #172b4d;
+    }
 
-    <label>Fuel Type</label><br>
-    <input type="text"
-           name="fuel_type"
-           value="{{ vehicle.fuel_type }}"><br><br>
+    .page-heading p {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.8;
+        margin: 0;
+        max-width: 620px;
+    }
 
-    <button type="submit">Update Vehicle</button>
+    .form-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
+        gap: 25px;
+        align-items: start;
+    }
 
-</form>
+    .form-card,
+    .information-card {
+        background: #fff;
+        border: 1px solid #e5eaf2;
+        border-radius: 17px;
+        overflow: hidden;
+        box-shadow: 0 6px 24px rgba(15, 23, 42, 0.035);
+    }
 
-</body>
-</html>
+    .form-card-header {
+        padding: 24px 28px;
+        border-bottom: 1px solid #edf1f6;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .header-icon {
+        width: 47px;
+        height: 47px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+        flex-shrink: 0;
+    }
+
+    .form-card-header h2 {
+        color: #172b4d;
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 5px;
+    }
+
+    .form-card-header p {
+        color: #64748b;
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .vehicle-form {
+        padding: 28px;
+    }
+
+    .form-section-title {
+        color: #172b4d;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .form-section-title i {
+        color: #2563eb;
+        font-size: 17px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 21px 18px;
+    }
+
+    .form-field {
+        min-width: 0;
+    }
+
+    .form-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-field label {
+        display: block;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 9px;
+    }
+
+    .required-mark {
+        color: #dc2626;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper > i {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 17px;
+        pointer-events: none;
+    }
+
+    .form-control-custom,
+    .form-select-custom {
+        width: 100%;
+        min-height: 49px;
+        border: 1px solid #dbe3ee;
+        border-radius: 10px;
+        background: #fff;
+        color: #172b4d;
+        font-size: 13px;
+        padding: 12px 14px 12px 43px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+    }
+
+    .form-select-custom {
+        cursor: pointer;
+        appearance: auto;
+    }
+
+    .form-control-custom:focus,
+    .form-select-custom:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.09);
+    }
+
+    .form-control-custom::placeholder {
+        color: #a0acbd;
+    }
+
+    .field-help {
+        display: block;
+        margin-top: 7px;
+        color: #94a3b8;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .form-divider {
+        height: 1px;
+        background: #edf1f6;
+        margin: 28px 0 23px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 29px;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary-custom,
+    .btn-secondary-custom {
+        min-height: 47px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 12px 19px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary-custom {
+        background: #2563eb;
+        color: white;
+        border: 1px solid #2563eb;
+        flex: 1;
+    }
+
+    .btn-primary-custom:hover {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 7px 16px rgba(37, 99, 235, 0.17);
+    }
+
+    .btn-secondary-custom {
+        background: white;
+        color: #475569;
+        border: 1px solid #dbe3ee;
+    }
+
+    .btn-secondary-custom:hover {
+        background: #f8fafc;
+        color: #172b4d;
+    }
+
+    .information-card {
+        padding: 25px;
+    }
+
+    .vehicle-preview {
+        min-height: 150px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #172b4d, #2563eb);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 9px;
+        margin-bottom: 24px;
+        text-align: center;
+        padding: 15px;
+        box-sizing: border-box;
+        overflow-wrap: anywhere;
+    }
+
+    .vehicle-preview > i {
+        font-size: 49px;
+    }
+
+    .vehicle-preview h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .vehicle-preview span {
+        font-size: 12px;
+        color: #dbeafe;
+    }
+
+    .information-card h4 {
+        color: #172b4d;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 19px;
+    }
+
+    .info-icon {
+        width: 35px;
+        height: 35px;
+        flex-shrink: 0;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+    .info-item h5 {
+        color: #334155;
+        font-size: 12px;
+        font-weight: 700;
+        margin: 2px 0 5px;
+    }
+
+    .info-item p {
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .privacy-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #f8fafc;
+        border: 1px solid #e8edf5;
+        border-radius: 11px;
+        padding: 14px;
+        margin-top: 23px;
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .privacy-note i {
+        color: #059669;
+        font-size: 16px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    @media (max-width: 850px) {
+        .form-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .form-card-header,
+        .vehicle-form,
+        .information-card {
+            padding: 20px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .form-field.full-width {
+            grid-column: auto;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-primary-custom,
+        .btn-secondary-custom {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="edit-vehicle-page">
+
+<header class="page-heading">
+    <span class="page-eyebrow">
+        <i class="bi bi-pencil-square"></i>
+        Vehicle Management
+    </span>
+
+    <h1>Edit Vehicle</h1>
+
+    <p>
+        Update your vehicle information and keep your DriveCare records accurate.
+    </p>
+</header>
+
+<div class="form-layout">
+
+    <!-- Edit Form -->
+    <section class="form-card">
+
+        <div class="form-card-header">
+            <div class="header-icon">
+                <i class="bi bi-clipboard2-check"></i>
+            </div>
+
+            <div>
+                <h2>Vehicle Information</h2>
+                <p>Review and update the fields below.</p>
+            </div>
+        </div>
+
+        <form
+            method="POST"
+            action="{{ url_for('edit_vehicle', vehicle_id=vehicle.vehicle_id) }}"
+            class="vehicle-form"
+        >
+
+            <h3 class="form-section-title">
+                <i class="bi bi-info-circle"></i>
+                Basic Details
+            </h3>
+
+            <div class="form-grid">
+
+                <div class="form-field">
+                    <label for="brand">
+                        Vehicle Brand <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-car-front"></i>
+                        <input
+                            type="text"
+                            id="brand"
+                            name="brand"
+                            class="form-control-custom"
+                            value="{{ vehicle.brand }}"
+                            maxlength="80"
+                            required
+                        >
+                    </div>
+
+                    <small class="field-help">Manufacturer of your vehicle.</small>
+                </div>
+
+                <div class="form-field">
+                    <label for="model">
+                        Vehicle Model <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-car-front-fill"></i>
+                        <input
+                            type="text"
+                            id="model"
+                            name="model"
+                            class="form-control-custom"
+                            value="{{ vehicle.model }}"
+                            maxlength="80"
+                            required
+                        >
+                    </div>
+
+                    <small class="field-help">Name or model of your vehicle.</small>
+                </div>
+
+                <div class="form-field">
+                    <label for="year">
+                        Manufacturing Year <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-calendar3"></i>
+                        <input
+                            type="number"
+                            id="year"
+                            name="year"
+                            class="form-control-custom"
+                            value="{{ vehicle.year }}"
+                            min="1900"
+                            max="2100"
+                            required
+                        >
+                    </div>
+
+                    <small class="field-help">Check the year before saving.</small>
+                </div>
+
+                <div class="form-field">
+                    <label for="fuel_type">
+                        Fuel Type <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-fuel-pump"></i>
+                        <select
+                            id="fuel_type"
+                            name="fuel_type"
+                            class="form-select-custom"
+                            required
+                        >
+                            {% set fuel_options = ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'Other'] %}
+
+                            {% if vehicle.fuel_type and vehicle.fuel_type not in fuel_options %}
+                                <option value="{{ vehicle.fuel_type }}" selected>
+                                    {{ vehicle.fuel_type }}
+                                </option>
+                            {% endif %}
+
+                            {% for fuel in fuel_options %}
+                                <option
+                                    value="{{ fuel }}"
+                                    {% if vehicle.fuel_type|string|lower == fuel|lower %}selected{% endif %}
+                                >
+                                    {{ fuel }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <small class="field-help">Choose the correct fuel category.</small>
+                </div>
+
+                <div class="form-field full-width">
+                    <label for="registration_number">
+                        Registration Number <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                        <i class="bi bi-card-text"></i>
+                        <input
+                            type="text"
+                            id="registration_number"
+                            name="registration_number"
+                            class="form-control-custom"
+                            value="{{ vehicle.registration_number }}"
+                            maxlength="20"
+                            autocapitalize="characters"
+                            required
+                        >
+                    </div>
+
+                    <small class="field-help">
+                        Verify the number against your vehicle's registration plate.
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="form-divider"></div>
+
+            <h3 class="form-section-title">
+                <i class="bi bi-check2-circle"></i>
+                Save Your Changes
+            </h3>
+
+            <p style="color:#64748b; font-size:12px; line-height:1.8; margin:0;">
+                Your existing details are pre-filled. Change only the information that needs updating.
+            </p>
+
+            <div class="form-actions">
+
+                <button type="submit" class="btn-primary-custom">
+                    <i class="bi bi-check2-circle"></i>
+                    Save Changes
+                </button>
+
+                <a href="{{ url_for('my_vehicles') }}" class="btn-secondary-custom">
+                    <i class="bi bi-arrow-left"></i>
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </section>
+
+    <!-- Information Panel -->
+    <aside class="information-card">
+
+        <div class="vehicle-preview">
+            <i class="bi bi-car-front-fill"></i>
+
+            <h3>{{ vehicle.brand }} {{ vehicle.model }}</h3>
+
+            <span>Vehicle #{{ vehicle.vehicle_id }}</span>
+        </div>
+
+        <h4>Editing Tips</h4>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="bi bi-card-text"></i>
+            </div>
+
+            <div>
+                <h5>Registration Number</h5>
+                <p>Ensure the number matches your vehicle's registration plate.</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+
+            <div>
+                <h5>Model Year</h5>
+                <p>Keep the recorded year accurate for your vehicle.</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="bi bi-fuel-pump"></i>
+            </div>
+
+            <div>
+                <h5>Fuel Type</h5>
+                <p>Select the category that correctly describes your vehicle.</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </div>
+
+            <div>
+                <h5>Changed Your Mind?</h5>
+                <p>Select Cancel to return to My Vehicles without saving these edits.</p>
+            </div>
+        </div>
+
+        <div class="privacy-note">
+            <i class="bi bi-shield-check"></i>
+            <div>
+                <strong>Account protection.</strong>
+                You can edit only vehicles associated with your account.
+            </div>
+        </div>
+
+    </aside>
+
+</div>
+
+</div>
+
+{% endblock %}

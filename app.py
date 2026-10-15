@@ -1,3 +1,4 @@
+import pandas as pd
 from models.user import User
 from flask import Flask, render_template, request
 from config import Config
@@ -9,17 +10,41 @@ from models.vehicle import Vehicle
 from flask_login import current_user
 from models.vehicle import Vehicle
 from models.booking import Booking
+from flask import session
 from datetime import datetime
+from data_mining.dashboard import data_mining_bp
+from data_mining.business_dashboard import business_bp
+from flask import make_response
+from flask_login import current_user
+from flask import request, redirect, url_for, flash
+from flask_login import login_required, current_user
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
+@app.after_request
+def prevent_authenticated_page_caching(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0, private"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+
+
+print("SECRET_KEY configured:", bool(app.config.get("SECRET_KEY")))
+
 db.init_app(app)
 login_manager.init_app(app)
 bcrypt.init_app(app)
+app.register_blueprint(data_mining_bp)
+app.register_blueprint(business_bp)
 
 @app.route("/")
 def home():
+    print("\n--- HOME ROUTE REACHED ---")
+    print("Authenticated:", current_user.is_authenticated)
+    print("Session keys:", list(session.keys()))
+
     return render_template("index.html")
 
 
@@ -60,7 +85,8 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user)
+            remember = request.form.get("remember") == "on"
+            login_user(user, remember=remember)
             return redirect(url_for("dashboard"))
 
         return "Invalid Email or Password"
@@ -70,7 +96,29 @@ def login():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    total_vehicles = Vehicle.query.count()
+    total_bookings = Booking.query.count()
+
+    pending_bookings = Booking.query.filter(
+        db.func.lower(Booking.status) == "pending"
+    ).count()
+
+    completed_bookings = Booking.query.filter(
+        db.func.lower(Booking.status).in_(["completed", "done"])
+    ).count()
+
+    recent_bookings = Booking.query.order_by(
+        Booking.created_at.desc()
+    ).limit(5).all()
+
+    return render_template(
+        "dashboard.html",
+        total_vehicles=total_vehicles,
+        total_bookings=total_bookings,
+        pending_bookings=pending_bookings,
+        completed_bookings=completed_bookings,
+        recent_bookings=recent_bookings
+    )
 
 @app.route("/logout")
 @login_required
@@ -212,20 +260,76 @@ def my_bookings():
 @app.route("/admin")
 @login_required
 def admin_dashboard():
-
     if current_user.role != "admin":
         return "Access Denied", 403
 
-    users = User.query.all()
-    vehicles = Vehicle.query.all()
-    bookings = Booking.query.all()
+    users = User.query.order_by(User.created_at.desc()).all()
+
+    vehicles = Vehicle.query.order_by(
+        Vehicle.created_at.desc()
+    ).all()
+
+    bookings = Booking.query.order_by(
+        Booking.created_at.desc()
+    ).all()
+
+    total_users = User.query.count()
+    total_vehicles = Vehicle.query.count()
+    total_bookings = Booking.query.count()
+
+    pending_bookings = Booking.query.filter(
+        db.func.lower(Booking.status) == "pending"
+    ).count()
+
+    completed_bookings = Booking.query.filter(
+        db.func.lower(Booking.status).in_(["completed", "done"])
+    ).count()
 
     return render_template(
         "admin_dashboard.html",
         users=users,
         vehicles=vehicles,
-        bookings=bookings
+        bookings=bookings,
+        total_users=total_users,
+        total_vehicles=total_vehicles,
+        total_bookings=total_bookings,
+        pending_bookings=pending_bookings,
+        completed_bookings=completed_bookings
     )
+
+@app.route("/admin/update-booking-status/[int:booking_id](int:booking_id)", methods=["POST"])
+@login_required
+def update_booking_status(booking_id):
+    if current_user.role != "admin":
+        return "Access Denied", 403
+
+    booking = db.session.get(Booking, booking_id)
+
+    if booking is None:
+        return "Booking not found", 404
+
+    new_status = request.form.get("status", "").strip().title()
+
+    allowed_transitions = {
+        "Pending": ["Confirmed", "Cancelled"],
+        "Confirmed": ["Completed", "Cancelled"],
+    }
+
+    current_status = (booking.status or "").strip().title()
+
+    if new_status not in allowed_transitions.get(current_status, []):
+        return "Invalid booking status change", 400
+
+    booking.status = new_status
+    db.session.commit()
+
+    flash(
+        f"Booking #{booking.booking_id} status updated to {new_status}.",
+        "success"
+    )
+
+    return redirect(url_for("admin_dashboard"))
+
 
 with app.app_context():
     db.create_all()

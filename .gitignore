@@ -1,5 +1,20 @@
 venv/
-__pycache__/
+**pycache**/
 *.pyc
 .env
 instance/
+
+# Generated data mining results
+
+data_mining/output/
+data_mining/warehouse/
+data_mining/olap_results/
+data_mining/association_results/
+data_mining/classification_results/
+data_mining/clustering_results/
+data_mining/outlier_results/
+
+# Python-generated analysis outputs
+
+*.joblib
+*.pkl

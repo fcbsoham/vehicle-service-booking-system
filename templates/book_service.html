@@ -1,74 +1,1118 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Book Service</title>
-</head>
+{% block title %}Book a Service | DriveCare{% endblock %}
 
-<body>
+{% block content %}
+<section class="book-service-page">
+    <div class="book-service-container">
 
-<h2>Book Vehicle Service</h2>
+        <!-- Page Header -->
+        <div class="service-page-header">
+            <div>
+                <span class="service-eyebrow">
+                    <i class="bi bi-calendar2-check"></i>
+                    SERVICE APPOINTMENT
+                </span>
+                <h1>Book a Service</h1>
+                <p>Keep your vehicle in top condition with a service appointment.</p>
+            </div>
 
+            <a href="{{ url_for('my_bookings') }}" class="service-back-link">
+                <i class="bi bi-arrow-left"></i>
+                My Bookings
+            </a>
+        </div>
 
-<form method="POST">
+        {% if vehicles %}
+        <form method="POST" action="{{ url_for('book_service') }}" id="bookingForm">
 
-<label>Select Vehicle</label><br>
+            <div class="service-booking-layout">
 
-<select name="vehicle_id">
+                <!-- Main Form -->
+                <div class="service-form-panel">
 
-{% for vehicle in vehicles %}
+                    <!-- Vehicle Selection -->
+                    <div class="service-form-section">
+                        <div class="service-section-heading">
+                            <span class="service-step-number">01</span>
+                            <div>
+                                <h2>Select Your Vehicle</h2>
+                                <p>Choose the vehicle that needs servicing.</p>
+                            </div>
+                        </div>
 
-<option value="{{ vehicle.vehicle_id }}">
-    {{ vehicle.brand }} {{ vehicle.model }}
-</option>
+                        <div class="vehicle-selection-grid">
+                            {% for vehicle in vehicles %}
+                            <label class="vehicle-option">
+                                <input
+                                    type="radio"
+                                    name="vehicle_id"
+                                    value="{{ vehicle.vehicle_id }}"
+                                    required
+                                    {% if loop.first %}checked{% endif %}
+                                >
 
-{% endfor %}
+                                <div class="vehicle-option-card">
+                                    <div class="vehicle-option-top">
+                                        <span class="vehicle-option-icon">
+                                            <i class="bi bi-car-front-fill"></i>
+                                        </span>
+                                        <span class="vehicle-radio-indicator">
+                                            <i class="bi bi-check-lg"></i>
+                                        </span>
+                                    </div>
 
-</select>
+                                    <h3>{{ vehicle.brand }} {{ vehicle.model }}</h3>
 
-<br><br>
+                                    <span class="vehicle-registration">
+                                        <i class="bi bi-upc-scan"></i>
+                                        {{ vehicle.registration_number }}
+                                    </span>
 
+                                    <div class="vehicle-option-meta">
+                                        <span>{{ vehicle.year }}</span>
+                                        <span>{{ vehicle.fuel_type }}</span>
+                                    </div>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
 
-<label>Service Type</label><br>
+                    <!-- Service Selection -->
+                    <div class="service-form-section">
+                        <div class="service-section-heading">
+                            <span class="service-step-number">02</span>
+                            <div>
+                                <h2>Choose a Service</h2>
+                                <p>Select the type of service your vehicle requires.</p>
+                            </div>
+                        </div>
 
-<select name="service_type">
+                        <div class="service-type-grid">
 
-<option>General Service</option>
-<option>Oil Change</option>
-<option>Engine Repair</option>
-<option>Brake Service</option>
-<option>Car Wash</option>
+                            <label class="service-type-option">
+                                <input type="radio" name="service_type"
+                                       value="General Service" required>
+                                <div class="service-type-card">
+                                    <span class="service-type-icon">
+                                        <i class="bi bi-tools"></i>
+                                    </span>
+                                    <span class="service-type-name">General Service</span>
+                                    <span class="service-type-description">Routine vehicle maintenance</span>
+                                    <span class="service-type-check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </div>
+                            </label>
 
-</select>
+                            <label class="service-type-option">
+                                <input type="radio" name="service_type" value="Oil Change" required>
+                                <div class="service-type-card">
+                                    <span class="service-type-icon">
+                                        <i class="bi bi-droplet-half"></i>
+                                    </span>
+                                    <span class="service-type-name">Oil Change</span>
+                                    <span class="service-type-description">Engine oil and filter</span>
+                                    <span class="service-type-check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </div>
+                            </label>
 
+                            <label class="service-type-option">
+                                <input type="radio" name="service_type" value="Engine Repair" required>
+                                <div class="service-type-card">
+                                    <span class="service-type-icon">
+                                        <i class="bi bi-gear-wide-connected"></i>
+                                    </span>
+                                    <span class="service-type-name">Engine Repair</span>
+                                    <span class="service-type-description">Engine inspection and repair</span>
+                                    <span class="service-type-check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </div>
+                            </label>
 
-<br><br>
+                            <label class="service-type-option">
+                                <input type="radio" name="service_type" value="Brake Service" required>
+                                <div class="service-type-card">
+                                    <span class="service-type-icon">
+                                        <i class="bi bi-disc"></i>
+                                    </span>
+                                    <span class="service-type-name">Brake Service</span>
+                                    <span class="service-type-description">Brake inspection and repair</span>
+                                    <span class="service-type-check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </div>
+                            </label>
 
+                            <label class="service-type-option">
+                                <input type="radio" name="service_type" value="Car Wash" required>
+                                <div class="service-type-card">
+                                    <span class="service-type-icon">
+                                        <i class="bi bi-water"></i>
+                                    </span>
+                                    <span class="service-type-name">Car Wash</span>
+                                    <span class="service-type-description">Exterior and interior cleaning</span>
+                                    <span class="service-type-check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </div>
+                            </label>
 
-<label>Booking Date</label><br>
+                            <label class="service-type-option">
+                                <input type="radio" name="service_type" value="Other" required>
+                                <div class="service-type-card">
+                                    <span class="service-type-icon">
+                                        <i class="bi bi-three-dots"></i>
+                                    </span>
+                                    <span class="service-type-name">Other Service</span>
+                                    <span class="service-type-description">Another maintenance requirement</span>
+                                    <span class="service-type-check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </span>
+                                </div>
+                            </label>
 
-<input type="date" name="booking_date" required>
+                        </div>
+                    </div>
 
+                    <!-- Date and Description -->
+                    <div class="service-form-section">
+                        <div class="service-section-heading">
+                            <span class="service-step-number">03</span>
+                            <div>
+                                <h2>Appointment Details</h2>
+                                <p>Choose your preferred date and describe the issue.</p>
+                            </div>
+                        </div>
 
-<br><br>
+                        <div class="service-input-group">
+                            <label for="booking_date">
+                                Preferred Service Date <span class="required-star">*</span>
+                            </label>
+                            <div class="service-input-wrapper">
+                                <i class="bi bi-calendar-event"></i>
+                                <input
+                                    type="date"
+                                    id="booking_date"
+                                    name="booking_date"
+                                    required
+                                >
+                            </div>
+                            <small>Select the date you would prefer for your service.</small>
+                        </div>
 
+                        <div class="service-input-group">
+                            <label for="description">Additional Details</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows="4"
+                                maxlength="1000"
+                                placeholder="Describe any unusual sounds, warning lights, problems, or special requests..."
+                            ></textarea>
+                            <div class="service-textarea-footer">
+                                <small>Optional — provide details to help explain your service needs.</small>
+                                <small><span id="descriptionCount">0</span>/1000</small>
+                            </div>
+                        </div>
+                    </div>
 
-<label>Description</label><br>
+                    <div class="service-form-actions">
+                        <a href="{{ url_for('my_vehicles') }}" class="service-cancel-btn">
+                            Cancel
+                        </a>
+                        <button type="submit" class="service-submit-btn">
+                            Confirm Booking
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
 
-<textarea name="description"></textarea>
+                </div>
 
+                <!-- Booking Summary Sidebar -->
+                <aside class="service-summary-panel">
+                    <div class="service-summary-heading">
+                        <span class="service-summary-icon">
+                            <i class="bi bi-clipboard2-check"></i>
+                        </span>
+                        <div>
+                            <h2>Booking Summary</h2>
+                            <p>Review your appointment details.</p>
+                        </div>
+                    </div>
 
-<br><br>
+                    <div class="service-summary-preview">
+                        <div class="summary-preview-icon">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+                        <span class="summary-preview-label">SELECTED VEHICLE</span>
+                        <h3 id="summaryVehicle">
+                            {% if vehicles %}
+                                {{ vehicles[0].brand }} {{ vehicles[0].model }}
+                            {% else %}
+                                No vehicle selected
+                            {% endif %}
+                        </h3>
+                        <p id="summaryRegistration">
+                            {% if vehicles %}{{ vehicles[0].registration_number }}{% endif %}
+                        </p>
+                    </div>
 
+                    <div class="service-summary-details">
+                        <div class="summary-detail-item">
+                            <span><i class="bi bi-wrench-adjustable"></i> Service Type</span>
+                            <strong id="summaryService">Not selected</strong>
+                        </div>
 
-<button type="submit">
-    Book Service
-</button>
+                        <div class="summary-detail-item">
+                            <span><i class="bi bi-calendar3"></i> Appointment Date</span>
+                            <strong id="summaryDate">Not selected</strong>
+                        </div>
+                    </div>
 
+                    <div class="service-summary-note">
+                        <i class="bi bi-info-circle"></i>
+                        <p>Your booking will be submitted for processing. Check My Bookings for its current status.</p>
+                    </div>
 
-</form>
+                    <div class="service-summary-footer">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Your vehicle details are associated with your account.</span>
+                    </div>
+                </aside>
 
+            </div>
+        </form>
 
-</body>
+        {% else %}
+        <!-- No Vehicle State -->
+        <div class="no-vehicle-panel">
+            <div class="no-vehicle-icon">
+                <i class="bi bi-car-front"></i>
+            </div>
+            <h2>Add a Vehicle First</h2>
+            <p>You need to register a vehicle before you can book a service appointment.</p>
+            <a href="{{ url_for('add_vehicle') }}" class="service-submit-btn">
+                <i class="bi bi-plus-lg"></i>
+                Add Your Vehicle
+            </a>
+            <a href="{{ url_for('my_vehicles') }}" class="no-vehicle-secondary">
+                View My Vehicles
+            </a>
+        </div>
+        {% endif %}
 
-</html>
+    </div>
+</section>
+
+<style>
+    .book-service-page {
+        min-height: 80vh;
+        padding: 42px 20px 65px;
+        background: #f5f7fb;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .book-service-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .service-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .service-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        color: #2864dc;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+    }
+
+    .service-page-header h1 {
+        margin: 0 0 8px;
+        color: #17233e;
+        font-size: clamp(28px, 4vw, 36px);
+        font-weight: 700;
+        letter-spacing: -1px;
+    }
+
+    .service-page-header p {
+        margin: 0;
+        color: #7b879b;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .service-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #52627d;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .service-back-link:hover {
+        color: #2864dc;
+    }
+
+    .service-booking-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 310px;
+        align-items: start;
+        gap: 24px;
+    }
+
+    .service-form-panel,
+    .service-summary-panel,
+    .no-vehicle-panel {
+        border: 1px solid #e8edf5;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 6px 25px rgba(24, 39, 75, 0.035);
+    }
+
+    .service-form-panel {
+        overflow: hidden;
+    }
+
+    .service-form-section {
+        padding: 28px;
+        border-bottom: 1px solid #edf0f6;
+    }
+
+    .service-section-heading {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .service-step-number {
+        display: flex;
+        flex: 0 0 39px;
+        width: 39px;
+        height: 39px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .service-section-heading h2 {
+        margin: 0 0 6px;
+        color: #17233e;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .service-section-heading p {
+        margin: 0;
+        color: #7b879b;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .vehicle-selection-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .vehicle-option,
+    .service-type-option {
+        display: block;
+        min-width: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .vehicle-option > input,
+    .service-type-option > input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .vehicle-option-card {
+        height: 100%;
+        padding: 16px;
+        border: 1px solid #e4e9f2;
+        border-radius: 13px;
+        background: #fff;
+        transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .vehicle-option-card:hover {
+        border-color: #b7cbf7;
+    }
+
+    .vehicle-option > input:checked + .vehicle-option-card {
+        border-color: #2864dc;
+        background: #f7f9ff;
+        box-shadow: 0 0 0 2px rgba(40, 100, 220, .08);
+    }
+
+    .vehicle-option > input:focus-visible + .vehicle-option-card,
+    .service-type-option > input:focus-visible + .service-type-card {
+        outline: 3px solid rgba(40, 100, 220, .3);
+        outline-offset: 3px;
+    }
+
+    .vehicle-option-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+
+    .vehicle-option-icon {
+        display: flex;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 21px;
+    }
+
+    .vehicle-radio-indicator {
+        display: flex;
+        width: 23px;
+        height: 23px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #d7dfed;
+        border-radius: 50%;
+        color: transparent;
+        font-size: 13px;
+    }
+
+    .vehicle-option > input:checked + .vehicle-option-card .vehicle-radio-indicator {
+        border-color: #2864dc;
+        background: #2864dc;
+        color: #fff;
+    }
+
+    .vehicle-option-card h3 {
+        margin: 0 0 8px;
+        color: #24334f;
+        font-size: 14px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .vehicle-registration {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #7b879b;
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .vehicle-option-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .vehicle-option-meta span {
+        padding: 5px 8px;
+        border-radius: 6px;
+        background: #f0f3f8;
+        color: #64728a;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .service-type-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .service-type-card {
+        position: relative;
+        display: flex;
+        min-height: 145px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+        border: 1px solid #e4e9f2;
+        border-radius: 12px;
+        background: #fff;
+        transition: border-color .2s ease, background .2s ease;
+    }
+
+    .service-type-card:hover {
+        border-color: #b7cbf7;
+    }
+
+    .service-type-option > input:checked + .service-type-card {
+        border-color: #2864dc;
+        background: #f7f9ff;
+    }
+
+    .service-type-icon {
+        display: flex;
+        width: 37px;
+        height: 37px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 18px;
+    }
+
+    .service-type-name {
+        padding-right: 16px;
+        color: #293752;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .service-type-description {
+        margin-top: 5px;
+        color: #8994a7;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .service-type-check {
+        position: absolute;
+        top: 13px;
+        right: 13px;
+        color: #2864dc;
+        font-size: 16px;
+        opacity: 0;
+    }
+
+    .service-type-option > input:checked + .service-type-card .service-type-check {
+        opacity: 1;
+    }
+
+    .service-input-group {
+        margin-bottom: 23px;
+    }
+
+    .service-input-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .service-input-group > label {
+        display: block;
+        margin-bottom: 9px;
+        color: #34425c;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .required-star {
+        color: #dc4545;
+    }
+
+    .service-input-wrapper {
+        position: relative;
+    }
+
+    .service-input-wrapper > i {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        color: #8a96aa;
+        font-size: 16px;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .service-input-wrapper input,
+    .service-input-group textarea {
+        width: 100%;
+        border: 1px solid #e0e6f0;
+        border-radius: 10px;
+        outline: none;
+        background: #fff;
+        color: #293752;
+        font-family: inherit;
+        font-size: 13px;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .service-input-wrapper input {
+        min-height: 48px;
+        padding: 12px 14px 12px 42px;
+    }
+
+    .service-input-group textarea {
+        display: block;
+        min-height: 115px;
+        padding: 13px 14px;
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    .service-input-wrapper input:focus,
+    .service-input-group textarea:focus {
+        border-color: #7da2f1;
+        box-shadow: 0 0 0 3px rgba(40, 100, 220, .09);
+    }
+
+    .service-input-group > small,
+    .service-textarea-footer small {
+        display: block;
+        margin-top: 8px;
+        color: #929caf;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .service-textarea-footer {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .service-textarea-footer small:last-child {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .service-form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 22px 28px;
+        background: #fbfcfe;
+    }
+
+    .service-cancel-btn,
+    .service-submit-btn {
+        display: inline-flex;
+        min-height: 45px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 12px 18px;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background .2s ease, transform .2s ease;
+    }
+
+    .service-cancel-btn {
+        border: 1px solid #e0e6f0;
+        background: #fff;
+        color: #68758c;
+    }
+
+    .service-cancel-btn:hover {
+        background: #f0f3f8;
+        color: #34425c;
+    }
+
+    .service-submit-btn {
+        border: 0;
+        background: #2864dc;
+        color: #fff;
+        box-shadow: 0 5px 14px rgba(40, 100, 220, .16);
+    }
+
+    .service-submit-btn:hover {
+        background: #1e50b5;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .service-summary-panel {
+        position: sticky;
+        top: 25px;
+        padding: 23px;
+    }
+
+    .service-summary-heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 23px;
+    }
+
+    .service-summary-icon {
+        display: flex;
+        flex: 0 0 43px;
+        width: 43px;
+        height: 43px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 20px;
+    }
+
+    .service-summary-heading h2 {
+        margin: 0 0 5px;
+        color: #17233e;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .service-summary-heading p {
+        margin: 0;
+        color: #8994a7;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .service-summary-preview {
+        padding: 19px;
+        border: 1px solid #e6ecf7;
+        border-radius: 13px;
+        background: #f7f9ff;
+    }
+
+    .summary-preview-icon {
+        display: flex;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        border-radius: 11px;
+        background: #fff;
+        color: #2864dc;
+        font-size: 21px;
+        box-shadow: 0 2px 8px rgba(24, 39, 75, .05);
+    }
+
+    .summary-preview-label {
+        color: #8a96aa;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .service-summary-preview h3 {
+        margin: 8px 0 5px;
+        color: #263651;
+        font-size: 16px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .service-summary-preview > p {
+        margin: 0;
+        color: #7b879b;
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .service-summary-details {
+        padding: 19px 0;
+    }
+
+    .summary-detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 0;
+        border-bottom: 1px solid #edf0f6;
+    }
+
+    .summary-detail-item:last-child {
+        border-bottom: 0;
+    }
+
+    .summary-detail-item > span {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #8994a7;
+        font-size: 11px;
+    }
+
+    .summary-detail-item > span i {
+        color: #7890ba;
+        font-size: 14px;
+    }
+
+    .summary-detail-item > strong {
+        color: #34425c;
+        font-size: 12px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .service-summary-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #fff7e8;
+        color: #9b6b1c;
+    }
+
+    .service-summary-note > i {
+        margin-top: 2px;
+        font-size: 15px;
+    }
+
+    .service-summary-note p {
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.8;
+    }
+
+    .service-summary-footer {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-top: 19px;
+        color: #7b879b;
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    .service-summary-footer i {
+        margin-top: 2px;
+        color: #15945a;
+        font-size: 14px;
+    }
+
+    .no-vehicle-panel {
+        max-width: 560px;
+        margin: 30px auto;
+        padding: 55px 25px;
+        text-align: center;
+    }
+
+    .no-vehicle-icon {
+        display: flex;
+        width: 76px;
+        height: 76px;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 22px;
+        background: #edf3ff;
+        color: #2864dc;
+        font-size: 32px;
+    }
+
+    .no-vehicle-panel h2 {
+        margin: 0 0 10px;
+        color: #17233e;
+        font-size: 23px;
+        font-weight: 700;
+    }
+
+    .no-vehicle-panel p {
+        max-width: 380px;
+        margin: 0 auto 24px;
+        color: #7b879b;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .no-vehicle-secondary {
+        display: block;
+        margin-top: 17px;
+        color: #2864dc;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    @media (max-width: 1000px) {
+        .service-booking-layout {
+            grid-template-columns: minmax(0, 1fr) 275px;
+            gap: 16px;
+        }
+
+        .service-form-section {
+            padding: 23px;
+        }
+
+        .service-summary-panel {
+            padding: 18px;
+        }
+    }
+
+    @media (max-width: 800px) {
+        .service-booking-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .service-summary-panel {
+            position: static;
+            grid-row: 1;
+        }
+
+        .service-summary-preview {
+            padding: 15px;
+        }
+    }
+
+    @media (max-width: 550px) {
+        .book-service-page {
+            padding: 27px 13px 45px;
+        }
+
+        .service-page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .vehicle-selection-grid,
+        .service-type-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .service-form-section {
+            padding: 20px 15px;
+        }
+
+        .service-form-actions {
+            padding: 17px 15px;
+        }
+
+        .service-cancel-btn,
+        .service-submit-btn {
+            padding: 12px;
+        }
+
+        .service-form-actions > * {
+            flex: 1;
+        }
+
+        .service-summary-panel {
+            padding: 17px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const vehicleInputs = document.querySelectorAll('input[name="vehicle_id"]');
+        const serviceInputs = document.querySelectorAll('input[name="service_type"]');
+        const dateInput = document.getElementById("booking_date");
+        const descriptionInput = document.getElementById("description");
+        const descriptionCount = document.getElementById("descriptionCount");
+
+        const summaryVehicle = document.getElementById("summaryVehicle");
+        const summaryRegistration = document.getElementById("summaryRegistration");
+        const summaryService = document.getElementById("summaryService");
+        const summaryDate = document.getElementById("summaryDate");
+
+        // Prevent choosing a date earlier than today's local date.
+        const now = new Date();
+        const localToday = [
+            now.getFullYear(),
+            String(now.getMonth() + 1).padStart(2, "0"),
+            String(now.getDate()).padStart(2, "0")
+        ].join("-");
+        dateInput.min = localToday;
+
+        // Update the selected vehicle in the summary.
+        function updateVehicleSummary() {
+            const selected = document.querySelector('input[name="vehicle_id"]:checked');
+            if (!selected) return;
+
+            const card = selected.nextElementSibling;
+            const name = card.querySelector("h3");
+            const registration = card.querySelector(".vehicle-registration");
+
+            summaryVehicle.textContent = name ? name.textContent.trim() : "Vehicle selected";
+            summaryRegistration.textContent = registration
+                ? registration.textContent.trim()
+                : "";
+        }
+
+        // Update the selected service in the summary.
+        function updateServiceSummary() {
+            const selected = document.querySelector('input[name="service_type"]:checked');
+            if (!selected) {
+                summaryService.textContent = "Not selected";
+                return;
+            }
+
+            const name = selected.closest(".service-type-option")
+                .querySelector(".service-type-name");
+            summaryService.textContent = name ? name.textContent.trim() : selected.value;
+        }
+
+        // Update the date shown in the summary.
+        function updateDateSummary() {
+            if (!dateInput.value) {
+                summaryDate.textContent = "Not selected";
+                return;
+            }
+
+            const parts = dateInput.value.split("-");
+            const date = new Date(
+                Number(parts[0]),
+                Number(parts[1]) - 1,
+                Number(parts[2])
+            );
+
+            summaryDate.textContent = date.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
+        }
+
+        // Update the optional description character counter.
+        function updateDescriptionCount() {
+            descriptionCount.textContent = descriptionInput.value.length;
+        }
+
+        vehicleInputs.forEach(input =>
+            input.addEventListener("change", updateVehicleSummary)
+        );
+
+        serviceInputs.forEach(input =>
+            input.addEventListener("change", updateServiceSummary)
+        );
+
+        dateInput.addEventListener("change", updateDateSummary);
+        descriptionInput.addEventListener("input", updateDescriptionCount);
+
+        updateVehicleSummary();
+        updateServiceSummary();
+        updateDateSummary();
+        updateDescriptionCount();
+    });
+</script>
+{% endblock %}
