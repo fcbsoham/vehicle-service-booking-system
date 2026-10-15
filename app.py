@@ -12,7 +12,6 @@ from models.vehicle import Vehicle
 from models.booking import Booking
 from flask import session
 from datetime import datetime
-from data_mining.dashboard import data_mining_bp
 from data_mining.business_dashboard import business_bp
 from flask import make_response
 from flask_login import current_user
@@ -36,7 +35,6 @@ print("SECRET_KEY configured:", bool(app.config.get("SECRET_KEY")))
 db.init_app(app)
 login_manager.init_app(app)
 bcrypt.init_app(app)
-app.register_blueprint(data_mining_bp)
 app.register_blueprint(business_bp)
 
 @app.route("/")
